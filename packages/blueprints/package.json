@@ -1,13 +1,12 @@
 {
-  "name": "blueprints",
-  "version": "0.1.0",
+  "name": "@prism/blueprints",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "src/index.js",
-  "exports": "./src/index.js",
+  "main": "src/index.ts",
+  "files": [],
   "scripts": {
-    "build": "echo Building blueprints",
-    "test": "echo Testing blueprints",
-    "lint": "echo Linting blueprints"
+    "build": "echo 'Blueprints are spec-only and have no build output'",
+    "clean": "rimraf dist || true"
   }
 }
