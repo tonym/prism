@@ -1,4 +1,4 @@
-# `@prism/shared`
+# @prism/shared
 
 `@prism/shared` contains foundational utilities, common types, helpers, and low-level building blocks used across the Prism workspace.
 
@@ -17,11 +17,11 @@ It provides:
 ### **1. Utility functions**
 Small pieces of generic logic reused across packages, such as:
 
-- safe JSON helpers  
-- object/array manipulation  
-- functional utilities  
-- type guards  
-- string and text helpers  
+- safe JSON helpers
+- object/array manipulation
+- functional utilities
+- type guards
+- string and text helpers
 
 These are used broadly across adapters, pipelines, CLI tooling, and evals.
 
@@ -32,12 +32,12 @@ Strong typing is core to Prism’s safety model.
 
 Shared provides:
 
-- generic utility types  
-- error types  
-- result wrappers  
-- discriminated unions  
-- async helpers  
-- common interface patterns  
+- generic utility types
+- error types
+- result wrappers
+- discriminated unions
+- async helpers
+- common interface patterns
 
 These form the baseline for consistent TypeScript structure throughout the codebase.
 
@@ -48,17 +48,17 @@ Anything used by multiple packages but not specific to any one of them lives her
 
 Examples include:
 
-- environment/config helpers  
-- stable timestamp or UUID helpers  
-- small pure functions  
-- formatting utilities  
+- environment/config helpers
+- stable timestamp or UUID helpers
+- small pure functions
+- formatting utilities
 
 Keeping these centralized keeps duplication low and consistency high.
 
 ---
 
 ### **4. Zero external dependencies**
-This package intentionally does **not** wrap third-party APIs or SDKs.  
+This package intentionally does **not** wrap third-party APIs or SDKs.
 That is the responsibility of `@prism/adapters`.
 
 Shared remains clean and deterministic.
@@ -85,11 +85,11 @@ Primitives should compose cleanly rather than attempt to be frameworks.
 
 Possible expansions include:
 
-- richer functional utility helpers  
-- consistent error taxonomy shared across the workspace  
-- reusable retry/backoff primitives (pure, adapter-agnostic)  
-- lightweight structured logging helpers  
-- schema utilities compatible with blueprints  
+- richer functional utility helpers
+- consistent error taxonomy shared across the workspace
+- reusable retry/backoff primitives (pure, adapter-agnostic)
+- lightweight structured logging helpers
+- schema utilities compatible with blueprints
 
 ---
 
@@ -99,9 +99,9 @@ Possible expansions include:
 
 It provides:
 
-- reusable utilities  
-- common types  
-- pure helpers  
-- stable, dependency-free primitives  
+- reusable utilities
+- common types
+- pure helpers
+- stable, dependency-free primitives
 
 Every other package in the monorepo can rely on `shared` without pulling in complexity.

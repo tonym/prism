@@ -1,6 +1,6 @@
-# `@prism/cli`
+# @prism/cli
 
-The Prism CLI provides a unified command-line interface for working across the entire Prism workspace.  
+The Prism CLI provides a unified command-line interface for working across the entire Prism workspace.
 It streamlines development tasks, scaffolds new modules, and enables generative-agent workflows by exposing a stable surface for automation.
 
 The CLI is designed to be lightweight, predictable, and tightly aligned with Prism’s blueprint-driven architecture.
@@ -9,13 +9,13 @@ The CLI is designed to be lightweight, predictable, and tightly aligned with Pri
 
 ## 🎯 Goals
 
-- Speed up development inside the monorepo  
-- Provide consistent tooling for pipelines, adapters, UI components, and workspace utilities  
-- Integrate with blueprints to generate strongly-typed, consistent scaffolds  
-- Offer a reliable automation surface for human and agent workflows  
+- Speed up development inside the monorepo
+- Provide consistent tooling for pipelines, adapters, UI components, and workspace utilities
+- Integrate with blueprints to generate strongly-typed, consistent scaffolds
+- Offer a reliable automation surface for human and agent workflows
 - Reduce boilerplate and eliminate repetitive setup across packages
 
-The CLI is intentionally minimal — it does not bundle heavy dependencies or runtime logic.  
+The CLI is intentionally minimal — it does not bundle heavy dependencies or runtime logic.
 Instead, it focuses on providing ergonomic commands and deferring functionality to other packages when appropriate.
 
 ---
@@ -26,11 +26,11 @@ The CLI typically supports commands such as:
 
 ### **Scaffolding**
 Generate new elements that follow Prism conventions:
-- pipelines  
-- adapters  
-- evaluation modules  
-- UI components (via `ui-core`)  
-- blueprint stubs  
+- pipelines
+- adapters
+- evaluation modules
+- UI components (via `ui-core`)
+- blueprint stubs
 
 All scaffolds are derived from `@prism/blueprints` to maintain consistency.
 
@@ -39,11 +39,11 @@ All scaffolds are derived from `@prism/blueprints` to maintain consistency.
 ### **Workspace Utilities**
 High-level utilities for maintaining the monorepo:
 
-- validating blueprint alignment  
-- checking dependency consistency  
-- regenerating derived code  
-- cleaning or resetting workspace output  
-- type-checking or linting wrappers  
+- validating blueprint alignment
+- checking dependency consistency
+- regenerating derived code
+- cleaning or resetting workspace output
+- type-checking or linting wrappers
 
 ---
 
@@ -51,11 +51,11 @@ High-level utilities for maintaining the monorepo:
 
 The CLI may wrap or automate tasks like:
 
-- spinning up example environments  
-- creating development sandboxes  
-- running sample pipelines  
-- introspecting adapter capabilities  
-- previewing UI tokens or component contracts  
+- spinning up example environments
+- creating development sandboxes
+- running sample pipelines
+- introspecting adapter capabilities
+- previewing UI tokens or component contracts
 
 Everything is optional and additive; the CLI should empower developers, not lock them into strict flows.
 
@@ -83,11 +83,11 @@ Commands should be idempotent, stable, and transparent in what they generate or 
 
 Possible future enhancements include:
 
-- blueprint-driven diffing and migration helpers  
-- interactive mode with pipeline or UI previews  
-- adapter introspection tools  
-- automatic test generation  
-- project templates for new Prism-based applications  
+- blueprint-driven diffing and migration helpers
+- interactive mode with pipeline or UI previews
+- adapter introspection tools
+- automatic test generation
+- project templates for new Prism-based applications
 
 ---
 

@@ -1,9 +1,9 @@
-# `@prism/evals`
+# @prism/evals
 
-`@prism/evals` provides the evaluation framework for Prism.  
+`@prism/evals` provides the evaluation framework for Prism.
 Its purpose is to validate the correctness, consistency, and resilience of pipelines, adapters, and generated artifacts across the monorepo.
 
-Evals act as a quality gate for both human-written implementations and generative-agent-produced code.  
+Evals act as a quality gate for both human-written implementations and generative-agent-produced code.
 They ensure alignment with blueprints, detect contract drift, and help maintain predictable behavior.
 
 ---
@@ -19,10 +19,10 @@ To do that, evals provide:
 ### **1. Contract validation**
 Using the canonical contract definitions in `@prism/blueprints`, evals can:
 
-- verify that pipeline inputs/outputs match defined structures  
-- confirm adapter responses adhere to expected shapes  
-- detect missing fields, incorrect types, or invalid variants  
-- ensure data transformations respect blueprint invariants  
+- verify that pipeline inputs/outputs match defined structures
+- confirm adapter responses adhere to expected shapes
+- detect missing fields, incorrect types, or invalid variants
+- ensure data transformations respect blueprint invariants
 
 This is the backbone of structural correctness.
 
@@ -32,11 +32,11 @@ This is the backbone of structural correctness.
 
 Beyond raw shapes, evals test:
 
-- control flow correctness  
-- edge-case handling  
-- error surface behavior  
-- deterministic outputs when applicable  
-- safe fallbacks and graceful degradation  
+- control flow correctness
+- edge-case handling
+- error surface behavior
+- deterministic outputs when applicable
+- safe fallbacks and graceful degradation
 
 This ensures Prism modules behave reliably under real-world conditions.
 
@@ -46,11 +46,11 @@ This ensures Prism modules behave reliably under real-world conditions.
 
 Evals establish a baseline for expected behavior and detect:
 
-- unintended changes  
-- breaking refactors  
-- blueprint drift  
-- adapter API mismatches  
-- incorrectly generated code from agents  
+- unintended changes
+- breaking refactors
+- blueprint drift
+- adapter API mismatches
+- incorrectly generated code from agents
 
 This keeps the ecosystem stable as it evolves.
 
@@ -60,9 +60,9 @@ This keeps the ecosystem stable as it evolves.
 
 Evals also serve as a safety harness for AI-generated modules by:
 
-- testing generated pipelines or adapters against contracts  
-- verifying naming, interface alignment, and IO structure  
-- confirming that generated code composes safely with existing modules  
+- testing generated pipelines or adapters against contracts
+- verifying naming, interface alignment, and IO structure
+- confirming that generated code composes safely with existing modules
 
 This allows safe iterative generation and regeneration throughout the codebase.
 
@@ -70,6 +70,6 @@ This allows safe iterative generation and regeneration throughout the codebase.
 
 ## 🧩 What evals typically include
 
-- **unit-level behavioral tests** for pipelines and adapters  
-- **contract conformance tests** keyed to blueprint definitions  
+- **unit-level behavioral tests** for pipelines and adapters
+- **contract conformance tests** keyed to blueprint definitions
 - **scenario-based evals** for workflows
