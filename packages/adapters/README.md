@@ -60,8 +60,4 @@ This separation ensures:
 - UI components only receive known shapes  
 - upgrading providers becomes predictable  
 
----
-
-## 📚 Folder Structure
-
 
