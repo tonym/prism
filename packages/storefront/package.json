@@ -1,0 +1,13 @@
+{
+  "name": "storefront",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "build": "echo Building storefront",
+    "test": "echo Testing storefront",
+    "lint": "echo Linting storefront"
+  }
+}
