@@ -1,0 +1,13 @@
+{
+  "name": "ui-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "build": "echo Building ui-core",
+    "test": "echo Testing ui-core",
+    "lint": "echo Linting ui-core"
+  }
+}

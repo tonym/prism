@@ -1,0 +1,13 @@
+{
+  "name": "adapters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "exports": "./src/index.js",
+  "scripts": {
+    "build": "echo Building adapters",
+    "test": "echo Testing adapters",
+    "lint": "echo Linting adapters"
+  }
+}

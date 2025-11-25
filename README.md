@@ -53,6 +53,12 @@ This repository is now organized as a pnpm workspace covering two packages:
 
 - `packages/stably`
 - `packages/storefront`
+- `packages/ui-core`
+- `packages/adapters`
+- `packages/blueprints`
+- `packages/pipelines`
+- `packages/evals`
+- `packages/cli`
 
 Run `pnpm install` to bootstrap the workspace.
 
