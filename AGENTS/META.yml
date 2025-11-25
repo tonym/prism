@@ -1,0 +1,94 @@
+version: 1
+project: prism
+
+agents:
+  allowed_operations:
+    - read
+    - propose_changes
+    - write_limited # only where explicitly allowed
+    - generate_assets # components, adapters, pipelines, evals, docs
+    - run_evals
+    - format_code
+
+  forbidden_operations:
+    - modify_security_settings
+    - modify_ci_config # except where explicitly allowed
+    - delete_files
+    - modify_license
+    - publish_packages
+    - create_or_modify_sensitive_secrets
+    - uncontrolled_file_generation # all new files must map to a blueprint, adapter, eval, or pipeline spec
+
+guardrails:
+  # Ensures all generated code conforms to the Prism architecture
+  architectural_rules:
+    - adapters_must_depend_only_on_third_party_sdks
+    - pipelines_must_use_blueprints
+    - ui_generation_must_use_ui_core_primitives
+    - no_cross_package_imports_outside_public_contracts
+    - new_features_require_blueprint_extension
+
+  # Ensures deterministic, testable outputs
+  generation_requirements:
+    - deterministic_output: true
+    - requires_contract_alignment: true
+    - requires_test_coverage: true
+    - requires_eval_coverage: optional
+
+  # Ensures safe code boundaries
+  write_permissions:
+    blueprints: 'allowed_with_contract_alignment'
+    adapters: 'allowed_with_provider_spec'
+    pipelines: 'allowed_with_validation'
+    evals: 'allowed'
+    ui-core: 'allowed_for_primitives_only'
+    storefront: 'allowed_for_widgets_only'
+    shared: 'read_only'
+    infra: 'read_only'
+    root: 'read_only'
+
+  # File structure constraints enforced by CI + agent runtime
+  file_structure:
+    enforce_blueprint_contracts: true
+    enforce_adapter_normalization: true
+    enforce_pipeline_stability: true
+    enforce_primitives_in_ui_core: true
+    enforce_no_runtime_logic_in_blueprints: true
+
+  # Required checks before writing code
+  pre_write_checks:
+    - validate_path_against_blueprint
+    - check_for_existing_contract
+    - ensure_no_forbidden_operations
+    - ensure_dependencies_whitelisted
+    - run_static_analysis
+
+  # Required checks after generating code
+  post_write_checks:
+    - run_lint
+    - run_typecheck
+    - ensure_unit_tests_created
+    - ensure_docs_updated_if_applicable
+
+contracts:
+  semantics:
+    - 'All agent decisions must trace back to blueprints or specs.'
+    - 'All generated code must be reversible, diffable, and minimal.'
+    - 'No hidden or emergent behavior is permitted.'
+
+  stability:
+    versioning:
+      blueprint_contracts: 'strict'
+      adapters: 'semi_strict'
+      pipelines: 'strict'
+      evals: 'flexible'
+      ui_core: 'strict_for_primitives'
+
+metadata:
+  owner: tonym
+  created: 2025-11-25
+  updated: auto
+  description: |
+    Global guardrail configuration for all AI agents operating within the Prism
+    repository. CI enforces every rule defined here. This is the canonical
+    behavioral contract between automated agents and the Prism codebase.
