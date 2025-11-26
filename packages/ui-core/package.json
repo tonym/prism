@@ -1,5 +1,5 @@
 {
-  "name": "ui-core",
+  "name": "@prism/ui-core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
