@@ -10,6 +10,7 @@
     "test": "pnpm -r test"
   },
   "devDependencies": {
+    "prettier": "^3.7.1",
     "typescript": "^5.9.3"
   }
 }
