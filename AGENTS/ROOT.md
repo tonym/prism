@@ -65,25 +65,94 @@ If a rule in any of these files contradicts code in the repo, the **AGENTS spec 
 
 1. **Respect Package Boundaries**
    Never introduce cross-package dependencies that violate architectural lines.
+   
+2. **Global Import Rules (Required for All Agents)**
 
-2. **Blueprint-First Development**
+All generated or modified code **must follow monorepo import boundaries**.
+
+**Allowed (Package Imports)**  
+Agents must import from **workspace packages by name**, never by relative paths:
+
+```ts
+import { Button } from '@prism/ui-core';
+import { getClient } from '@prism/adapters';
+import { productSchema } from '@prism/sanity';
+import { formatPrice } from '@prism/shared';
+```
+
+**Not Allowed (Relative Cross-Package Paths)**  
+Agents must **never** generate imports that cross package boundaries via relative paths:
+
+```ts
+import { Button } from '../../ui-core/src/components/Button';
+import { something } from '../../../shared/utils';
+```
+
+**Enforcement**
+- Applies to all packages and domains (UI, Angular, adapters, pipelines, evals, etc).
+- Agents must refuse or fail output that violates import boundaries.
+- Relative imports *within* the same package are allowed and expected.
+
+Following this rule guarantees:
+- deterministic builds  
+- safe refactors  
+- consistent agent behavior  
+- clean dependency graphs across the system
+  
+3. **Blueprint-First Development**
    All pipelines, adapters, and UI structures must map cleanly onto a blueprint contract.
    If no blueprint exists, propose one before implementing logic.
 
-3. **Minimal, Localized Diffs**
+4. **Minimal, Localized Diffs**
    Make the smallest change required unless explicitly directed otherwise.
 
-4. **Deterministic Output**
+5. **Deterministic Output**
    Code generation must be stable, predictable, and strictly follow conventions defined in AGENTS protocols.
 
-5. **Adhere to Canonical Paths**
+6. **Adhere to Canonical Paths**
    Only generate files in locations consistent with the package directory rules.
 
-6. **Never Guess**
+7. **Never Guess**
    If a requirement is ambiguous or a file is missing, the agent MUST ask for human clarification.
 
-7. **Document Intent**
+8. **Document Intent**
    When adding new logic, update nearby docs, READMEs, or protocol files.
+
+9. **Testing Conventions**
+
+All generated or modified code **must include complete, deterministic test coverage**.
+
+**Requirements (applies to every package and domain):**
+- Every new component, utility, adapter, pipeline, or blueprint MUST include a corresponding test file as a sibling to the tested file in the same folder.
+- Tests MUST use exactly one `expect()` per `it()` — including table-driven tests, which MUST have at most one `expect()` per test case.
+- Table-driven tests are allowed and encouraged for inputs with clear permutations.
+- All tests MUST pass before an agent considers a task complete.
+- Tests MUST follow the directory and naming structure defined by the package (e.g., `__tests__`, mirroring file paths, or package-specific conventions).
+- Agents MUST NOT introduce snapshot tests.
+- Tests MUST remain hermetic and deterministic—no reliance on external services or nondeterministic timers.
+
+**Test Coverage Requirements**
+
+- Agents MUST generate tests that exercise **all reachable branches** of logic — including happy paths, error paths, guard clauses, and edge cases.
+- If a branch cannot be exercised, agents MUST flag the code for orchestrator review, as this often indicates:
+  - unreachable or dead code  
+  - overly defensive or redundant checks  
+  - structural issues in flow control  
+  - state transformations that cannot occur under real conditions
+- Agents MAY refactor logic (when permitted) to improve testability and eliminate unreachable branches.
+- Coverage MUST be meaningful, not superficial:
+  - no trivial execution-only tests  
+  - no placeholder tests  
+  - no tautological assertions  
+- Agents MUST avoid artificially inflating coverage through mocks that bypass meaningful logic.
+
+The goal of coverage is to create **architectural pressure** that reveals structural weakness, ensures correctness, and drives higher-quality agent-generated output.
+
+These requirements ensure:
+- predictable system behavior  
+- safe refactoring  
+- verifiable agent output  
+- consistent structure across all packages
 
 ---
 
