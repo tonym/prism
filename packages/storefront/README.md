@@ -1,38 +1,59 @@
-# @prism/storefront
+# Storefront
 
-The **Storefront** is the interactive application layer of Prism — the place where pipelines, adapters, blueprints, and evals come together into a cohesive, human-facing experience. It serves as the **hub** in Prism’s hub-and-spoke architecture.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
 
-## 🚀 Purpose
+## Development server
 
-The Storefront provides:
+To start a local development server, run:
 
-- A unified interface for experimenting with pipelines
-- A playground for composing or inspecting agents
-- UI surfaces for testing adapters and external integrations
-- Tooling for validating blueprint-driven workflows
-- A reference implementation for anyone embedding Prism in their own stack
+```bash
+ng serve
+```
 
-It is the “front door” to the entire system.
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## 🧩 How It Fits Into Prism
+## Code scaffolding
 
-- **Blueprints** define the shapes and expectations of every pipeline and agent.
-- **Adapters** implement external integrations behind clean, deterministic interfaces.
-- **Pipelines** define composable, blueprint-aligned flows.
-- **Evals** validate robustness and behavior.
+Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
-The **Storefront** stitches these pieces together in a highly flexible environment.
+```bash
+ng generate component component-name
+```
 
-## 🔧 Implementation Notes
+For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-- Intended to host UI components, demos, tools, dashboards, and agent UX.
-- Designed for rapid experimentation, not heavy production hardening (though it can grow in that direction).
-- May include:
-  - Angular or framework-specific UI modules
-  - Agent play areas
-  - Visualization tools (graphs, timelines, traces)
-  - Controls for running pipelines step-by-step
+```bash
+ng generate --help
+```
 
-## 🗺️ Vision
+## Building
 
-Storefront is the place where humans interact with Prism — not just a UI, but a **workspace for building, iterating, and understanding AI workflows**.
+To build the project run:
+
+```bash
+ng build
+```
+
+This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Running unit tests
+
+To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+
+```bash
+ng test
+```
+
+## Running end-to-end tests
+
+For end-to-end (e2e) testing, run:
+
+```bash
+ng e2e
+```
+
+Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Additional Resources
+
+For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
