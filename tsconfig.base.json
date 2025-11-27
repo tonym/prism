@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    // Strictness
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Module system (NodeNext works for Angular, Node, Pipelines, Blueprints)
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    // Language level
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+
+    // Output control
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "newLine": "lf",
+    "removeComments": false,
+
+    // Interop & module behavior
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    // Path hygiene
+    "skipLibCheck": false,
+
+    // Source maps
+    "sourceMap": true
+  }
+}
