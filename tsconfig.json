@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/adapters" },
+    { "path": "./packages/blueprints" },
+    { "path": "./packages/evals" },
+    { "path": "./packages/pipelines" },
+    { "path": "./packages/sanity" },
+    { "path": "./packages/storefront" },
+    { "path": "./packages/ui-core" }
+  ]
+}
