@@ -5,10 +5,12 @@ agents:
   allowed_operations:
     - read
     - propose_changes
-    - write_limited # only where explicitly allowed
+    - write_limited
     - generate_assets # components, adapters, pipelines, evals, docs
     - run_evals
     - format_code
+    notes:
+      write_limited: 'only where explicitly allowed by write_permissions explained below'
 
   forbidden_operations:
     - modify_security_settings
@@ -18,6 +20,25 @@ agents:
     - publish_packages
     - create_or_modify_sensitive_secrets
     - uncontrolled_file_generation # all new files must map to a blueprint, adapter, eval, or pipeline spec
+
+  roles:
+    orchestrator:
+      protocol: /AGENTS/ORCHESTRATOR.md
+      scope: plan_only
+      allowed_actions:
+        - decompose_request
+        - select_pipelines
+        - coordinate_evals
+        - request_human_approval
+    worker:
+      protocol: /AGENTS/ROOT.md
+      scope: execute_only
+    eval:
+      protocol: /AGENTS/EVALS.md
+      scope: verify_only
+      authority:
+        - block_merge
+        - require_revision
 
 guardrails:
   # Ensures all generated code conforms to the Prism architecture
@@ -33,7 +54,8 @@ guardrails:
     - deterministic_output: true
     - requires_contract_alignment: true
     - requires_test_coverage: true
-    - requires_eval_coverage: optional
+    - requires_eval_coverage: conditional # Required for new pipelines, adapters, or blueprint extensions
+
 
   # Ensures safe code boundaries
   write_permissions:
@@ -70,11 +92,17 @@ guardrails:
     - ensure_unit_tests_created
     - ensure_docs_updated_if_applicable
 
+  behavioral_rules:
+    - orchestrators_must_not_write_code
+    - workers_must_not_plan_or_escalate
+
 contracts:
   semantics:
     - 'All agent decisions must trace back to blueprints or specs.'
     - 'All generated code must be reversible, diffable, and minimal.'
     - 'No hidden or emergent behavior is permitted.'
+    - 'Orchestrators must follow /AGENTS/ORCHESTRATOR.md. Planning is governed.'
+    - 'Evals and validators are binding enforcement signals. Agents may not override them.'
 
   stability:
     versioning:
@@ -92,3 +120,4 @@ metadata:
     Global guardrail configuration for all AI agents operating within the Prism
     repository. CI enforces every rule defined here. This is the canonical
     behavioral contract between automated agents and the Prism codebase.
+
