@@ -43,8 +43,12 @@ Storefront must **not** include:
 - Domain structures (Blueprints own structures)
 - Business or orchestration logic
 - Global stateful services unless explicitly approved
+- Speculative or optimistic UI that assumes pipeline success without confirmed results
 
 All cross-layer responsibilities must flow through Pipelines.
+
+UI state must reflect confirmed system state only.
+Speculation belongs to orchestration and planning layers, not presentation.
 
 ---
 
@@ -77,6 +81,31 @@ Storefront must **never** depend on:
 - Node-only APIs  
 - Other Storefront pages by circular reference  
 - Vendor SDKs or raw HTTP calls
+
+---
+
+## 🚦 Relationship to Orchestration
+
+Storefront is not an orchestrator.
+
+Storefront may:
+
+- Trigger pipelines or orchestrator-managed actions
+- Display progress, pending, success, and failure states
+- Render UX based on finalized outputs
+
+Storefront may not:
+
+- Implement retry logic
+- Perform task decomposition
+- Decide fallback strategies
+- Handle partial or speculative results
+- Coordinate multi-step flows beyond local UI state
+
+All execution control, retries, escalation, and validation decisions are governed by `/AGENTS/ORCHESTRATOR.md`.
+
+Storefront reacts to outcomes — it does not manage execution.
+
 
 ---
 
