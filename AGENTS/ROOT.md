@@ -23,9 +23,9 @@ Defines contracts, schemas, UI structures, agent action contracts, and pipeline 
 Contains *all external service integration logic* (LLMs, APIs, SDKs, databases).
 No other package may directly depend on external vendors.
 
-### **Pipelines (orchestration & logic)**
+### **Pipelines (execution & sequencing)**
 `packages/pipelines/`
-Implements workflows, chains, reasoning modules, and orchestrated flows that consume adapters & blueprints.
+Implements validated workflows and ordered execution flows that consume adapters and blueprints.
 
 ### **Evals (quality & benchmarking)**
 `packages/evals/`
@@ -56,6 +56,8 @@ The following protocol files define the rules for each domain:
 - `/AGENTS/STOREFRONT.md` — Rules for Storefront contributions.
 - `/AGENTS/UI_CORE.md` — How agents should construct or modify UI primitives.
 - `/AGENTS/META.yml` — Global metadata, versions, and protocol alignment info.
+- `/AGENTS/ORCHESTRATOR.md` — Planning, control, escalation, and eval coordination rules for orchestrating agents.
+
 
 If a rule in any of these files contradicts code in the repo, the **AGENTS spec wins**, and the code should be updated accordingly.
 
