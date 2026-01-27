@@ -20,6 +20,22 @@ Agents must treat blueprints as the **authoritative source of truth** for all st
 
 ---
 
+## 🛑 Authority of Blueprints
+
+Blueprints define **what is allowed to exist** in the system.
+
+They do not:
+- decide what to build,
+- decide when to execute,
+- perform orchestration,
+- or contain logic of any kind.
+
+Blueprints constrain workers, pipelines, orchestrators, and evals equally.
+
+All plans and executions must conform to blueprint definitions.
+
+---
+
 ## 📦 What Blueprints Contain
 
 Blueprints define:
@@ -42,6 +58,22 @@ Blueprints are **purely structural**.
 
 ---
 
+## 🔁 Relationship to Orchestration
+
+Orchestrators may:
+- read blueprint contracts,
+- use blueprint schemas to shape plans,
+- validate inputs and outputs against blueprint definitions.
+
+Orchestrators may not:
+- modify blueprints during planning,
+- invent structures not declared in blueprints,
+- treat blueprint constraints as optional.
+
+Blueprints are upstream of orchestration, not downstream of it.
+
+---
+
 ## 📐 Required Architectural Boundaries
 
 Blueprints live only in:
@@ -57,6 +89,7 @@ Other packages may **read** blueprint contracts but must never:
 * Duplicate or mirror blueprint structures outside this package
 
 All agent-generated code must reference blueprint types **directly**.
+If no appropriate blueprint exists, agents and orchestrators must stop and request human approval before proceeding.
 
 ---
 
