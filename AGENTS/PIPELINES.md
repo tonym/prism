@@ -1,6 +1,6 @@
 # Pipelines Protocol
 
-This document defines how agents must create, update, and maintain Prism Pipelines — the orchestrated flows that transform blueprint-defined structures into actionable logic across the Prism ecosystem.
+This document defines how agents must create, update, and maintain Prism Pipelines — the validated execution flows that transform blueprint-defined structures into actionable logic across the Prism ecosystem.
 
 Pipelines are the primary execution layer of the hub-and-spoke model. They consume blueprint contracts, coordinate adapters, and shape UI-ready outputs. Pipelines must remain predictable, composable, and fully aligned with the orchestrating agent’s guidance.
 
@@ -13,7 +13,7 @@ Pipelines provide:
 - Deterministic flows built from blueprint shapes
 - Domain-specific logic composed of small, testable units
 - Glue between adapters, shared utilities, and UI composition
-- A stable substrate for orchestrated agent reasoning
+- A stable substrate for executing plans produced by governed orchestrators
 - A safe execution layer for LLM-driven or human-driven workflows
 
 Pipelines describe **how data moves**, not business strategy or vendor logic.
@@ -192,6 +192,16 @@ Each pipeline must include:
 - Version history for breaking changes
 
 Supplemental Markdown documentation may be added alongside pipeline folders when appropriate.
+
+---
+
+## Authority Boundary
+
+Pipelines do not decide what to execute.
+
+They execute plans produced by governed orchestrators in accordance with blueprint contracts and substrate validation rules.
+
+Planning, decomposition, retries, escalation, and eval coordination are governed exclusively by `/AGENTS/ORCHESTRATOR.md`.
 
 ---
 
