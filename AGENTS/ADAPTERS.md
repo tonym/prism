@@ -32,6 +32,25 @@ Their job is strictly **I/O and translation**, nothing else.
 
 ---
 
+## 🛑 Authority of Adapters
+
+Adapters have **no decision-making authority**.
+
+They do not:
+- choose strategies,
+- select fallbacks,
+- retry autonomously,
+- suppress or reinterpret errors,
+- or alter behavior based on context.
+
+Adapters either:
+- return blueprint-aligned data, or
+- fail loudly and explicitly.
+
+All decisions about retries, fallbacks, degradation, or escalation belong to pipelines and orchestrators.
+
+---
+
 ## 🧭 What Agents Can Modify
 
 Agents may:
@@ -84,7 +103,11 @@ Adapters own:
 - SQL queries  
 - SDK calls  
 - Storage lookups  
-- Token refresh operations  
+- Token refresh operations
+
+Adapters must remain mechanically simple.
+
+If adapter code begins to resemble planning, heuristics, scoring, or conditional behavior beyond request/response translation, it is mislocated and must be moved into pipelines or orchestration logic.
 
 ---
 
@@ -124,6 +147,23 @@ When handling authentication:
 - Never bypass vendor-provided OAuth/Key mechanisms unless approved  
 
 If authentication logic becomes complex, propose a standalone `auth.adapter.ts`.
+
+---
+
+## ⚠️ Error Handling Rules
+
+Adapters may normalize errors only to:
+- map vendor-specific errors into blueprint-defined error shapes,
+- preserve original error information,
+- ensure deterministic failure modes.
+
+Adapters must not:
+- swallow errors,
+- retry automatically,
+- return partial or fabricated data,
+- or downgrade failures into warnings.
+
+Any non-successful adapter call is treated as a failure by default.
 
 ---
 
