@@ -22,6 +22,44 @@ Evals are Prism’s **quality enforcement engine**, guaranteeing long-term stabi
 
 ---
 
+## 🔁 Relationship to Orchestration
+
+Evals are external to both worker and orchestrator agents.
+
+Orchestrators may:
+- invoke evals,
+- receive eval results,
+- replan based on eval failure.
+
+Orchestrators may not:
+- suppress eval execution,
+- alter eval criteria,
+- reinterpret failing results as acceptable.
+
+Eval authority is **upstream of execution and planning**, not downstream of them.
+
+---
+
+## 🛑 Authority of Evals
+
+Evals are **binding enforcement mechanisms**, not advisory signals.
+
+When an eval fails:
+- execution must stop,
+- proposed changes must not proceed,
+- orchestrators must halt or replan,
+- workers must not attempt correction without authorization.
+
+Eval outcomes may not be:
+- overridden,
+- reinterpreted,
+- bypassed,
+- retried indefinitely to obtain a passing result.
+
+Evals define **whether a plan, change, or output is acceptable**, not whether it is convenient.
+
+---
+
 ## 📦 What Evals Contain
 
 Evals may include:
@@ -196,6 +234,8 @@ Storefront evals must be shallow: no deep DOM rendering outside core flows.
 
 ## 🧪 Scoring and Regression Rules
 
+Eval outcomes are binding and may not be overridden by orchestrators or workers.
+
 ### 1. Baseline Creation
 Agents create baselines whenever:
 
@@ -219,6 +259,17 @@ Evals must run identically on:
 - Agent-orchestrated environments  
 
 No flaky or random tests are allowed.
+
+---
+
+## ⛔ Failure Conditions
+
+If an eval cannot be executed due to:
+- missing fixtures,
+- undefined criteria,
+- incompatible schemas,
+- or insufficient context,
+the system must stop. Absence of validation is treated as failure. Evals must never be skipped due to uncertainty or time pressure.
 
 ---
 
