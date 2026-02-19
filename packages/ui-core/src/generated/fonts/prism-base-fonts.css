@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Public Sans"), local("PublicSans-Regular"), url("./files/prism-public-sans-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local("Public Sans Medium"), local("PublicSans-Medium"), url("./files/prism-public-sans-500.woff2") format("woff2");
+}
+
+:root {
+  --prism-font-family-sans: "Public Sans", "Segoe UI", sans-serif;
+}
