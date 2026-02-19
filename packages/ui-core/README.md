@@ -1,13 +1,13 @@
 # @prism/ui-core
 
-`@prism/ui-core` currently provides deterministic theme infrastructure for Prism.
+`@prism/ui-core` provides deterministic theme infrastructure and blueprint-driven Web Component artifacts for Prism.
 
-Phase 1 is intentionally infrastructure-only:
+Phase 2 introduces generated, theme-driven primitives while keeping deterministic behavior:
 
-- no UI components
-- no framework dependencies
-- no DOM logic
-- no runtime state or side effects
+- `Button` (`prism-button`)
+- `IconButton` (`prism-icon-button`)
+- `Typography` (`prism-typography`)
+- `Surface/Card` (`prism-surface`)
 
 ## Public API
 
@@ -19,6 +19,10 @@ The package exports:
 - `resolveCssVariables(effectiveTheme)` for deterministic `--prism-` variables
 - `cssVariablesToString(...)` and `resolveCssVariablesAsCss(...)` for optional CSS text output
 - Prism token exports from `src/prism-tokens.ts`
+- Component blueprints in `src/blueprint/components/*.blueprint.ts`
+- Deterministic generator utilities in `src/generator/**`
+- Generated component artifacts in `src/generated/components/**`
+- Facts-only component status reporting in `src/status/**`
 
 ## Merge Rules
 
@@ -46,3 +50,15 @@ Example keys:
 
 - `--prism-color-primary`
 - `--prism-typography-body-large-font-size`
+
+## Blueprint + Generation Flow
+
+- Blueprints are the source of truth.
+- Generated components are derived artifacts.
+- Regeneration is explicit and deterministic.
+
+Regenerate artifacts:
+
+```bash
+pnpm --filter @prism/ui-core generate:components
+```
