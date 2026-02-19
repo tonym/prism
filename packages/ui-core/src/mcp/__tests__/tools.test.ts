@@ -15,11 +15,15 @@ function createHandlers() {
 }
 
 describe('ui-core mcp tools v1 (milestone 1)', () => {
-  it('lists only the initial locked tool names for milestone 1', () => {
+  it('lists the locked v1 tool names in deterministic order', () => {
     expect(toolDefinitionsV1().map((entry) => entry.name)).toEqual([
       'getStatus',
       'listComponents',
-      'getComponentArtifact'
+      'getComponentArtifact',
+      'getBaseTheme',
+      'getBaseFonts',
+      'listBaseFontFiles',
+      'getBaseFontFile'
     ]);
   });
 
@@ -57,6 +61,34 @@ describe('ui-core mcp tools v1 (milestone 1)', () => {
     const result = createHandlers().listComponents({ version: 'latest' });
     const code = !result.ok ? result.error.code : null;
 
-    expect(code).toBe('INTERNAL_ERROR');
+    expect(code).toBe('VERSION_NOT_FOUND');
+  });
+
+  it('getBaseTheme returns the base theme css artifact metadata', () => {
+    const result = createHandlers().getBaseTheme(undefined);
+    const contentType = result.ok ? result.data.artifact.contentType : null;
+
+    expect(contentType).toBe('text/css');
+  });
+
+  it('getBaseFonts returns css with font-face declarations', () => {
+    const result = createHandlers().getBaseFonts(undefined);
+    const includesFontFace = result.ok ? result.data.artifact.content.includes('@font-face') : false;
+
+    expect(includesFontFace).toBe(true);
+  });
+
+  it('listBaseFontFiles returns stable file ids', () => {
+    const result = createHandlers().listBaseFontFiles(undefined);
+    const fileIds = result.ok ? result.data.files.map((entry) => entry.fileId) : [];
+
+    expect(fileIds).toEqual(['prism-public-sans-400.woff2', 'prism-public-sans-500.woff2']);
+  });
+
+  it('getBaseFontFile returns base64 encoded binary data', () => {
+    const result = createHandlers().getBaseFontFile({ fileId: 'prism-public-sans-400.woff2' });
+    const encoding = result.ok ? result.data.artifact.encoding : null;
+
+    expect(encoding).toBe('base64');
   });
 });

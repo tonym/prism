@@ -8,7 +8,11 @@ export type ToolHandler = (input: unknown) => ToolResult;
 const TOOL_NAMES = Object.freeze({
   getStatus: 'getStatus',
   listComponents: 'listComponents',
-  getComponentArtifact: 'getComponentArtifact'
+  getComponentArtifact: 'getComponentArtifact',
+  getBaseTheme: 'getBaseTheme',
+  getBaseFonts: 'getBaseFonts',
+  listBaseFontFiles: 'listBaseFontFiles',
+  getBaseFontFile: 'getBaseFontFile'
 });
 
 export interface ToolDefinition {
@@ -57,6 +61,44 @@ function coerceOptionalVersion(input: JsonObject): string | undefined {
   return rawVersion;
 }
 
+function coerceOptionalThemeId(input: JsonObject): string | undefined {
+  const rawThemeId = input.themeId;
+
+  if (rawThemeId === undefined || rawThemeId === null) {
+    return undefined;
+  }
+
+  if (typeof rawThemeId !== 'string') {
+    throw new ToolError('INVALID_INPUT', 'themeId must be a string when provided.');
+  }
+
+  return rawThemeId;
+}
+
+function coerceOptionalFontSetId(input: JsonObject): string | undefined {
+  const rawFontSetId = input.fontSetId;
+
+  if (rawFontSetId === undefined || rawFontSetId === null) {
+    return undefined;
+  }
+
+  if (typeof rawFontSetId !== 'string') {
+    throw new ToolError('INVALID_INPUT', 'fontSetId must be a string when provided.');
+  }
+
+  return rawFontSetId;
+}
+
+function coerceFileId(input: JsonObject): string {
+  const rawFileId = input.fileId;
+
+  if (typeof rawFileId !== 'string' || rawFileId.length === 0) {
+    throw new ToolError('INVALID_INPUT', 'fileId is required and must be a non-empty string.');
+  }
+
+  return rawFileId;
+}
+
 function coerceComponentId(input: JsonObject): string {
   const rawComponentId = input.componentId;
 
@@ -77,6 +119,39 @@ function sanitizeError(error: unknown): ToolError {
   }
 
   return new ToolError('INTERNAL_ERROR', 'Unexpected error while handling tool call.');
+}
+
+function resolveVersionOrThrow(store: UiCoreArtifactStore, input: JsonObject) {
+  try {
+    return store.resolveVersion(coerceOptionalVersion(input));
+  } catch {
+    throw new ToolError('VERSION_NOT_FOUND', 'Requested version is not available for ui-core artifacts.', {
+      requestedVersion: input.version === undefined ? null : input.version,
+      availableVersions: [...store.availableVersions()]
+    });
+  }
+}
+
+function resolveThemeIdOrThrow(store: UiCoreArtifactStore, input: JsonObject): string {
+  try {
+    return store.resolveBaseThemeId(coerceOptionalThemeId(input));
+  } catch {
+    throw new ToolError('THEME_NOT_FOUND', 'Requested themeId is not available.', {
+      requestedThemeId: input.themeId === undefined ? null : input.themeId,
+      availableThemeIds: store.listBaseThemeDescriptors().map((entry) => entry.themeId)
+    });
+  }
+}
+
+function resolveFontSetIdOrThrow(store: UiCoreArtifactStore, input: JsonObject): string {
+  try {
+    return store.resolveFontSetId(coerceOptionalFontSetId(input));
+  } catch {
+    throw new ToolError('FONT_SET_NOT_FOUND', 'Requested fontSetId is not available.', {
+      requestedFontSetId: input.fontSetId === undefined ? null : input.fontSetId,
+      availableFontSetIds: store.listBaseFontSetDescriptors().map((entry) => entry.fontSetId)
+    });
+  }
 }
 
 function createStatusTool(store: UiCoreArtifactStore): ToolHandler {
@@ -101,8 +176,12 @@ function createStatusTool(store: UiCoreArtifactStore): ToolHandler {
           componentId: entry.componentId,
           tagName: entry.tagName
         })),
-        themes: [],
-        fontSets: [],
+        themes: store.listBaseThemeDescriptors().map((entry) => ({
+          themeId: entry.themeId
+        })),
+        fontSets: store.listBaseFontSetDescriptors().map((entry) => ({
+          fontSetId: entry.fontSetId
+        })),
         blueprints: componentDescriptors.map((entry) => ({
           blueprintId: `${entry.componentId}.blueprint`,
           componentId: entry.componentId
@@ -112,7 +191,12 @@ function createStatusTool(store: UiCoreArtifactStore): ToolHandler {
         componentArtifactsPresent: missingComponentArtifactIds.length === 0,
         missingComponentArtifactIds,
         blueprintsPresent: missingBlueprintIds.length === 0,
-        missingBlueprintIds
+        missingBlueprintIds,
+        baseThemeArtifactPresent: store.hasBaseThemeArtifact(),
+        baseFontsCssArtifactPresent: store.hasBaseFontsCssArtifact(),
+        baseFontFilesPresent: store
+          .listBaseFontFileDescriptors(store.baseFontSetDescriptor.fontSetId)
+          .every((entry) => store.hasBaseFontFileArtifact(entry.fileId))
       }
     });
   };
@@ -121,7 +205,7 @@ function createStatusTool(store: UiCoreArtifactStore): ToolHandler {
 function createListComponentsTool(store: UiCoreArtifactStore): ToolHandler {
   return (input) => {
     const options = input === undefined ? {} : assertObject(input, 'options');
-    const versionResolution = store.resolveVersion(coerceOptionalVersion(options));
+    const versionResolution = resolveVersionOrThrow(store, options);
     const components = store.listComponentDescriptors().map((entry) => {
       const artifactPresent = store.hasComponentArtifact(entry.componentId);
 
@@ -172,7 +256,7 @@ function createGetComponentArtifactTool(store: UiCoreArtifactStore): ToolHandler
   return (input) => {
     const params = assertObject(input, 'input');
     const componentId = coerceComponentId(params);
-    const versionResolution = store.resolveVersion(coerceOptionalVersion(params));
+    const versionResolution = resolveVersionOrThrow(store, params);
     const descriptor = store.findComponentDescriptor(componentId);
 
     if (!descriptor) {
@@ -213,6 +297,167 @@ function createGetComponentArtifactTool(store: UiCoreArtifactStore): ToolHandler
   };
 }
 
+function createGetBaseThemeTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = input === undefined ? {} : assertObject(input, 'input');
+    const versionResolution = resolveVersionOrThrow(store, params);
+    const themeId = resolveThemeIdOrThrow(store, params);
+
+    if (!store.hasBaseThemeArtifact()) {
+      throw new ToolError('THEME_ARTIFACT_MISSING', 'Base theme CSS artifact is missing.', {
+        themeId,
+        artifactRef: store.baseThemeDescriptor.relativePath
+      });
+    }
+
+    const artifact = store.readBaseThemeArtifact(themeId);
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      themeId,
+      version: versionResolution.resolvedVersion,
+      artifact: {
+        fileId: store.baseThemeDescriptor.fileId,
+        fileName: artifact.fileName,
+        contentType: artifact.contentType,
+        encoding: 'utf8',
+        sizeBytes: artifact.sizeBytes,
+        hash: artifact.hash,
+        mtimeMs: artifact.mtimeMs,
+        content: artifact.content
+      }
+    });
+  };
+}
+
+function createGetBaseFontsTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = input === undefined ? {} : assertObject(input, 'input');
+    const versionResolution = resolveVersionOrThrow(store, params);
+    const fontSetId = resolveFontSetIdOrThrow(store, params);
+
+    if (!store.hasBaseFontsCssArtifact()) {
+      throw new ToolError('BASE_FONTS_ARTIFACT_MISSING', 'Base fonts CSS artifact is missing.', {
+        fontSetId,
+        artifactRef: store.baseFontSetDescriptor.cssRelativePath
+      });
+    }
+
+    const artifact = store.readBaseFontsCssArtifact(fontSetId);
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      fontSetId,
+      version: versionResolution.resolvedVersion,
+      artifact: {
+        fileId: store.baseFontSetDescriptor.cssFileId,
+        fileName: artifact.fileName,
+        contentType: artifact.contentType,
+        encoding: 'utf8',
+        sizeBytes: artifact.sizeBytes,
+        hash: artifact.hash,
+        mtimeMs: artifact.mtimeMs,
+        content: artifact.content
+      }
+    });
+  };
+}
+
+function createListBaseFontFilesTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = input === undefined ? {} : assertObject(input, 'input');
+    const versionResolution = resolveVersionOrThrow(store, params);
+    const fontSetId = resolveFontSetIdOrThrow(store, params);
+
+    const files = store.listBaseFontFileDescriptors(fontSetId).map((entry) => {
+      if (!store.hasBaseFontFileArtifact(entry.fileId)) {
+        return {
+          fileId: entry.fileId,
+          fileName: entry.fileName,
+          fileRef: entry.relativePath,
+          contentType: 'application/octet-stream',
+          hash: null,
+          sizeBytes: null,
+          present: false
+        } satisfies JsonObject;
+      }
+
+      const artifact = store.readBaseFontFileArtifact(entry.fileId);
+
+      return {
+        fileId: entry.fileId,
+        fileName: artifact.fileName,
+        fileRef: artifact.relativePath,
+        contentType: artifact.contentType,
+        hash: artifact.hash,
+        sizeBytes: artifact.sizeBytes,
+        present: true
+      } satisfies JsonObject;
+    });
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      fontSetId,
+      requestedVersion: versionResolution.requestedVersion,
+      resolvedVersion: versionResolution.resolvedVersion,
+      files
+    });
+  };
+}
+
+function createGetBaseFontFileTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = assertObject(input, 'input');
+    const fileId = coerceFileId(params);
+    const descriptor = store.findBaseFontFileDescriptor(fileId);
+
+    if (!descriptor) {
+      throw new ToolError('FONT_FILE_NOT_FOUND', `Unknown base font fileId "${fileId}".`, {
+        fileId,
+        availableFileIds: store
+          .listBaseFontFileDescriptors(store.baseFontSetDescriptor.fontSetId)
+          .map((entry) => entry.fileId)
+      });
+    }
+
+    if (!store.hasBaseFontFileArtifact(fileId)) {
+      throw new ToolError('BASE_FONT_FILE_MISSING', 'Base font file artifact is missing.', {
+        fileId,
+        fileRef: descriptor.relativePath
+      });
+    }
+
+    const artifact = store.readBaseFontFileArtifact(fileId);
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      fontSetId: descriptor.fontSetId,
+      fileId: descriptor.fileId,
+      artifact: {
+        fileName: artifact.fileName,
+        contentType: artifact.contentType,
+        encoding: 'base64',
+        sizeBytes: artifact.sizeBytes,
+        hash: artifact.hash,
+        mtimeMs: artifact.mtimeMs,
+        contentBase64: artifact.contentBase64
+      }
+    });
+  };
+}
+
 export function toolDefinitionsV1(): readonly ToolDefinition[] {
   return [
     {
@@ -247,6 +492,54 @@ export function toolDefinitionsV1(): readonly ToolDefinition[] {
           version: { type: 'string' }
         }
       }
+    },
+    {
+      name: TOOL_NAMES.getBaseTheme,
+      description: 'Returns the single global ui-core base theme CSS artifact.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          themeId: { type: 'string' },
+          version: { type: 'string' }
+        }
+      }
+    },
+    {
+      name: TOOL_NAMES.getBaseFonts,
+      description: 'Returns the base fonts CSS artifact with @font-face declarations.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          fontSetId: { type: 'string' },
+          version: { type: 'string' }
+        }
+      }
+    },
+    {
+      name: TOOL_NAMES.listBaseFontFiles,
+      description: 'Lists distributable base font files for the selected ui-core font set.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          fontSetId: { type: 'string' },
+          version: { type: 'string' }
+        }
+      }
+    },
+    {
+      name: TOOL_NAMES.getBaseFontFile,
+      description: 'Returns a base font file as base64-encoded bytes with content metadata.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['fileId'],
+        properties: {
+          fileId: { type: 'string' }
+        }
+      }
     }
   ] satisfies readonly ToolDefinition[];
 }
@@ -255,7 +548,11 @@ export function createToolHandlersV1(store: UiCoreArtifactStore): Readonly<Recor
   return Object.freeze({
     [TOOL_NAMES.getStatus]: wrapToolHandler(createStatusTool(store)),
     [TOOL_NAMES.listComponents]: wrapToolHandler(createListComponentsTool(store)),
-    [TOOL_NAMES.getComponentArtifact]: wrapToolHandler(createGetComponentArtifactTool(store))
+    [TOOL_NAMES.getComponentArtifact]: wrapToolHandler(createGetComponentArtifactTool(store)),
+    [TOOL_NAMES.getBaseTheme]: wrapToolHandler(createGetBaseThemeTool(store)),
+    [TOOL_NAMES.getBaseFonts]: wrapToolHandler(createGetBaseFontsTool(store)),
+    [TOOL_NAMES.listBaseFontFiles]: wrapToolHandler(createListBaseFontFilesTool(store)),
+    [TOOL_NAMES.getBaseFontFile]: wrapToolHandler(createGetBaseFontFileTool(store))
   });
 }
 
