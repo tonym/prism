@@ -60,6 +60,14 @@ export interface ComponentArtifactDescriptor {
   blueprintAbsolutePath: string;
 }
 
+export interface BlueprintArtifactDescriptor {
+  blueprintId: string;
+  componentId: string;
+  fileName: string;
+  relativePath: string;
+  absolutePath: string;
+}
+
 export interface BaseThemeDescriptor {
   themeId: string;
   fileId: string;
@@ -303,6 +311,20 @@ export class UiCoreArtifactStore {
     return this.componentDescriptors.find((entry) => entry.componentId === componentId);
   }
 
+  listBlueprintDescriptors(): readonly BlueprintArtifactDescriptor[] {
+    return this.componentDescriptors.map((entry) => ({
+      blueprintId: `${entry.componentId}.blueprint`,
+      componentId: entry.componentId,
+      fileName: entry.blueprintFileName,
+      relativePath: entry.blueprintRelativePath,
+      absolutePath: entry.blueprintAbsolutePath
+    }));
+  }
+
+  findBlueprintDescriptorByBlueprintId(blueprintId: string): BlueprintArtifactDescriptor | undefined {
+    return this.listBlueprintDescriptors().find((entry) => entry.blueprintId === blueprintId);
+  }
+
   hasComponentArtifact(componentId: string): boolean {
     const descriptor = this.findComponentDescriptor(componentId);
     return descriptor ? existsSync(descriptor.artifactAbsolutePath) : false;
@@ -341,6 +363,21 @@ export class UiCoreArtifactStore {
     });
 
     return resolveTextArtifact(descriptor.blueprintAbsolutePath, descriptor.blueprintRelativePath);
+  }
+
+  readBlueprintArtifactByBlueprintId(blueprintId: string): ResolvedArtifactText {
+    const descriptor = this.findBlueprintDescriptorByBlueprintId(blueprintId);
+
+    if (!descriptor) {
+      throw new Error(`Unknown blueprintId "${blueprintId}".`);
+    }
+
+    ensureFileExists(descriptor.absolutePath, 'Blueprint artifact', {
+      blueprintId: descriptor.blueprintId,
+      relativePath: descriptor.relativePath
+    });
+
+    return resolveTextArtifact(descriptor.absolutePath, descriptor.relativePath);
   }
 
   resolveBaseThemeId(requestedThemeId: unknown): string {

@@ -14,7 +14,7 @@ function createHandlers() {
   return createToolHandlersV1(store);
 }
 
-describe('ui-core mcp tools v1 (milestone 1)', () => {
+describe('ui-core mcp tools v1', () => {
   it('lists the locked v1 tool names in deterministic order', () => {
     expect(toolDefinitionsV1().map((entry) => entry.name)).toEqual([
       'getStatus',
@@ -23,7 +23,9 @@ describe('ui-core mcp tools v1 (milestone 1)', () => {
       'getBaseTheme',
       'getBaseFonts',
       'listBaseFontFiles',
-      'getBaseFontFile'
+      'getBaseFontFile',
+      'listBlueprints',
+      'getBlueprint'
     ]);
   });
 
@@ -90,5 +92,35 @@ describe('ui-core mcp tools v1 (milestone 1)', () => {
     const encoding = result.ok ? result.data.artifact.encoding : null;
 
     expect(encoding).toBe('base64');
+  });
+
+  it('listBlueprints returns component mapping metadata', () => {
+    const result = createHandlers().listBlueprints(undefined);
+    const buttonBlueprint = result.ok
+      ? result.data.blueprints.find((entry) => entry.componentId === 'button')?.blueprintId
+      : null;
+
+    expect(buttonBlueprint).toBe('button.blueprint');
+  });
+
+  it('getBlueprint resolves by componentId', () => {
+    const result = createHandlers().getBlueprint({ componentId: 'button' });
+    const blueprintId = result.ok ? result.data.blueprintId : null;
+
+    expect(blueprintId).toBe('button.blueprint');
+  });
+
+  it('getBlueprint resolves by blueprintId', () => {
+    const result = createHandlers().getBlueprint({ blueprintId: 'typography.blueprint' });
+    const componentId = result.ok ? result.data.componentId : null;
+
+    expect(componentId).toBe('typography');
+  });
+
+  it('getBlueprint requires blueprintId or componentId', () => {
+    const result = createHandlers().getBlueprint({});
+    const code = !result.ok ? result.error.code : null;
+
+    expect(code).toBe('INVALID_INPUT');
   });
 });

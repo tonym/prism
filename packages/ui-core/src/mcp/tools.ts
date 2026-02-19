@@ -12,7 +12,9 @@ const TOOL_NAMES = Object.freeze({
   getBaseTheme: 'getBaseTheme',
   getBaseFonts: 'getBaseFonts',
   listBaseFontFiles: 'listBaseFontFiles',
-  getBaseFontFile: 'getBaseFontFile'
+  getBaseFontFile: 'getBaseFontFile',
+  listBlueprints: 'listBlueprints',
+  getBlueprint: 'getBlueprint'
 });
 
 export interface ToolDefinition {
@@ -97,6 +99,20 @@ function coerceFileId(input: JsonObject): string {
   }
 
   return rawFileId;
+}
+
+function coerceOptionalBlueprintId(input: JsonObject): string | undefined {
+  const rawBlueprintId = input.blueprintId;
+
+  if (rawBlueprintId === undefined || rawBlueprintId === null) {
+    return undefined;
+  }
+
+  if (typeof rawBlueprintId !== 'string' || rawBlueprintId.length === 0) {
+    throw new ToolError('INVALID_INPUT', 'blueprintId must be a non-empty string when provided.');
+  }
+
+  return rawBlueprintId;
 }
 
 function coerceComponentId(input: JsonObject): string {
@@ -458,6 +474,112 @@ function createGetBaseFontFileTool(store: UiCoreArtifactStore): ToolHandler {
   };
 }
 
+function createListBlueprintsTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = input === undefined ? {} : assertObject(input, 'options');
+    const versionResolution = resolveVersionOrThrow(store, params);
+
+    const blueprints = store.listBlueprintDescriptors().map((entry) => {
+      const present = store.hasBlueprintArtifact(entry.componentId);
+
+      if (!present) {
+        return {
+          blueprintId: entry.blueprintId,
+          componentId: entry.componentId,
+          fileName: entry.fileName,
+          fileRef: entry.relativePath,
+          contentType: 'text/typescript',
+          present: false,
+          hash: null,
+          sizeBytes: null,
+          availableVersions: [...store.availableVersions()]
+        } satisfies JsonObject;
+      }
+
+      const artifact = store.readBlueprintArtifactByBlueprintId(entry.blueprintId);
+
+      return {
+        blueprintId: entry.blueprintId,
+        componentId: entry.componentId,
+        fileName: entry.fileName,
+        fileRef: entry.relativePath,
+        contentType: artifact.contentType,
+        present: true,
+        hash: artifact.hash,
+        sizeBytes: artifact.sizeBytes,
+        availableVersions: [...store.availableVersions()]
+      } satisfies JsonObject;
+    });
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      requestedVersion: versionResolution.requestedVersion,
+      resolvedVersion: versionResolution.resolvedVersion,
+      blueprints
+    });
+  };
+}
+
+function createGetBlueprintTool(store: UiCoreArtifactStore): ToolHandler {
+  return (input) => {
+    const params = assertObject(input, 'input');
+    const versionResolution = resolveVersionOrThrow(store, params);
+    const blueprintId = coerceOptionalBlueprintId(params);
+    const componentId = params.componentId === undefined ? undefined : coerceComponentId(params);
+
+    if (!blueprintId && !componentId) {
+      throw new ToolError(
+        'INVALID_INPUT',
+        'Either blueprintId or componentId is required to resolve a blueprint artifact.'
+      );
+    }
+
+    const descriptor = blueprintId
+      ? store.findBlueprintDescriptorByBlueprintId(blueprintId)
+      : store.listBlueprintDescriptors().find((entry) => entry.componentId === componentId);
+
+    if (!descriptor) {
+      throw new ToolError('BLUEPRINT_NOT_FOUND', 'Requested blueprint is not available.', {
+        requestedBlueprintId: blueprintId ?? null,
+        requestedComponentId: componentId ?? null,
+        availableBlueprintIds: store.listBlueprintDescriptors().map((entry) => entry.blueprintId)
+      });
+    }
+
+    if (!store.hasBlueprintArtifact(descriptor.componentId)) {
+      throw new ToolError('BLUEPRINT_ARTIFACT_MISSING', 'Blueprint artifact is missing.', {
+        blueprintId: descriptor.blueprintId,
+        componentId: descriptor.componentId,
+        fileRef: descriptor.relativePath
+      });
+    }
+
+    const artifact = store.readBlueprintArtifactByBlueprintId(descriptor.blueprintId);
+
+    return success({
+      package: {
+        name: store.packageIdentity.name,
+        version: store.packageIdentity.version
+      },
+      blueprintId: descriptor.blueprintId,
+      componentId: descriptor.componentId,
+      version: versionResolution.resolvedVersion,
+      artifact: {
+        fileName: artifact.fileName,
+        contentType: artifact.contentType,
+        encoding: 'utf8',
+        sizeBytes: artifact.sizeBytes,
+        hash: artifact.hash,
+        mtimeMs: artifact.mtimeMs,
+        content: artifact.content
+      }
+    });
+  };
+}
+
 export function toolDefinitionsV1(): readonly ToolDefinition[] {
   return [
     {
@@ -540,6 +662,30 @@ export function toolDefinitionsV1(): readonly ToolDefinition[] {
           fileId: { type: 'string' }
         }
       }
+    },
+    {
+      name: TOOL_NAMES.listBlueprints,
+      description: 'Lists ui-core blueprint artifacts and their component mappings.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          version: { type: 'string' }
+        }
+      }
+    },
+    {
+      name: TOOL_NAMES.getBlueprint,
+      description: 'Returns a blueprint artifact by blueprintId or componentId.',
+      inputSchema: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          blueprintId: { type: 'string' },
+          componentId: { type: 'string' },
+          version: { type: 'string' }
+        }
+      }
     }
   ] satisfies readonly ToolDefinition[];
 }
@@ -552,7 +698,9 @@ export function createToolHandlersV1(store: UiCoreArtifactStore): Readonly<Recor
     [TOOL_NAMES.getBaseTheme]: wrapToolHandler(createGetBaseThemeTool(store)),
     [TOOL_NAMES.getBaseFonts]: wrapToolHandler(createGetBaseFontsTool(store)),
     [TOOL_NAMES.listBaseFontFiles]: wrapToolHandler(createListBaseFontFilesTool(store)),
-    [TOOL_NAMES.getBaseFontFile]: wrapToolHandler(createGetBaseFontFileTool(store))
+    [TOOL_NAMES.getBaseFontFile]: wrapToolHandler(createGetBaseFontFileTool(store)),
+    [TOOL_NAMES.listBlueprints]: wrapToolHandler(createListBlueprintsTool(store)),
+    [TOOL_NAMES.getBlueprint]: wrapToolHandler(createGetBlueprintTool(store))
   });
 }
 
