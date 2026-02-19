@@ -33,6 +33,7 @@ export {
 } from './status/index.js';
 export { stableHash } from './determinism/stable-hash.js';
 export { stableSerialize } from './determinism/stable-serialize.js';
+export { UiCoreArtifactStore, UiCoreMcpServer, createToolHandlersV1, toolDefinitionsV1 } from './mcp/index.js';
 
 export type {
   CssVariableMap
@@ -82,3 +83,11 @@ export type {
   PrismTypographySizeScale,
   ThemeOverride
 } from './theme/types.js';
+
+export type {
+  JsonObject,
+  JsonValue,
+  PackageIdentity,
+  ToolErrorPayload,
+  ToolResult
+} from './mcp/index.js';
