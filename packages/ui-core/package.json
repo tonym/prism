@@ -9,6 +9,7 @@
   "scripts": {
     "generate:components": "rm -rf .tmp-component-generator && tsc -p tsconfig.json --noEmit false --declaration false --declarationMap false --sourceMap false --outDir .tmp-component-generator && node .tmp-component-generator/generator/generate-components-cli.js && rm -rf .tmp-component-generator",
     "mcp:server": "rm -rf .tmp-mcp-server && tsc -p tsconfig.json --noEmit false --declaration false --declarationMap false --sourceMap false --outDir .tmp-mcp-server && node .tmp-mcp-server/mcp/server-cli.js",
+    "mcp:example": "rm -rf .tmp-mcp-server && tsc -p tsconfig.json --noEmit false --declaration false --declarationMap false --sourceMap false --outDir .tmp-mcp-server && node .tmp-mcp-server/mcp/examples/consumer-css-override-example.js",
     "build": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json --noEmit"

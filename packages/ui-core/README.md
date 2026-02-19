@@ -63,6 +63,57 @@ Regenerate artifacts:
 pnpm --filter @prism/ui-core generate:components
 ```
 
+## UI Core MCP Distribution Server (v1)
+
+The ui-core MCP server is the distribution surface for ui-core artifacts.
+It only serves base artifacts and does not perform consumer customization.
+Consumers customize by applying their own CSS variable overrides (for example, overriding `--prism-*` values).
+
+Run locally:
+
+```bash
+pnpm --filter @prism/ui-core mcp:server
+```
+
+The server exposes only these tools in v1:
+
+1. `getStatus()`
+2. `listComponents(options?)`
+3. `getComponentArtifact({ componentId, version? })`
+4. `getBaseTheme({ themeId?, version? })`
+5. `getBaseFonts({ fontSetId?, version? })`
+6. `listBaseFontFiles({ fontSetId?, version? })`
+7. `getBaseFontFile({ fileId })`
+8. `listBlueprints(options?)`
+9. `getBlueprint({ blueprintId?, componentId?, version? })`
+
+Call contract:
+
+- Use MCP `tools/list` to discover tools.
+- Use MCP `tools/call` with `name` and `arguments`.
+- `version` is deterministic: omitted means current package version, and unsupported versions return a structured `VERSION_NOT_FOUND` error.
+- Tool responses use structured `ok` results:
+  - success: `{ ok: true, data: { ... } }`
+  - error: `{ ok: false, error: { code, message, details? } }`
+
+### Minimal End-to-End Consumer Override Proof
+
+Generate a standalone HTML example that fetches base theme CSS + one component artifact and applies consumer-side variable overrides:
+
+```bash
+pnpm --filter @prism/ui-core mcp:example > /tmp/prism-ui-core-mcp-override-demo.html
+```
+
+The generated page includes:
+
+- base theme CSS from `getBaseTheme()`
+- button component artifact from `getComponentArtifact({ componentId: "button" })`
+- consumer CSS override:
+  - `--prism-color-primary: #14532d;`
+  - `--prism-color-on-primary: #f8fafc;`
+
+This demonstrates customization is performed in consumer CSS, not by server-side theme merging.
+
 ## Concrete Template Override Example
 
 This example shows a minimal custom `button-brand` template kind that extends the existing button template with a branded border and shadow.
