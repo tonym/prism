@@ -11,7 +11,7 @@ export interface ComponentRegenerationAdvisory {
   notes: string[];
 }
 
-export interface ComponentStatus {
+interface ComponentStatusBase {
   componentId: string;
   blueprintRef: string;
   artifactRef: string;
@@ -21,12 +21,22 @@ export interface ComponentStatus {
   generatorHash: string;
   version: ComponentVersion;
   accessibility: ComponentAccessibility;
-  mayRegenerate: boolean;
-  regenerationAdvisory?: ComponentRegenerationAdvisory;
   statusFlags?: string[];
 }
 
-export interface ComponentStatusRegistryEntry {
+type ComponentStatusRegenerationState =
+  | {
+      mayRegenerate: true;
+      regenerationAdvisory: ComponentRegenerationAdvisory;
+    }
+  | {
+      mayRegenerate: false;
+      regenerationAdvisory?: never;
+    };
+
+export type ComponentStatus = ComponentStatusBase & ComponentStatusRegenerationState;
+
+interface ComponentStatusRegistryEntryBase {
   componentId: string;
   blueprintRef: string;
   artifactRef: string;
@@ -34,10 +44,21 @@ export interface ComponentStatusRegistryEntry {
   generatorIdentityInput?: string;
   version?: ComponentVersion;
   accessibility?: ComponentAccessibility;
-  mayRegenerate?: boolean;
-  regenerationAdvisory?: ComponentRegenerationAdvisory;
   statusFlags?: string[];
 }
+
+type ComponentStatusRegistryRegenerationState =
+  | {
+      mayRegenerate: true;
+      regenerationAdvisory: ComponentRegenerationAdvisory;
+    }
+  | {
+      mayRegenerate?: false;
+      regenerationAdvisory?: never;
+    };
+
+export type ComponentStatusRegistryEntry =
+  ComponentStatusRegistryEntryBase & ComponentStatusRegistryRegenerationState;
 
 export interface ComponentStatusRefResolver {
   read(ref: string): string | undefined;

@@ -56,14 +56,18 @@ describe('reportComponentStatuses', () => {
     expect(result[0]?.mayRegenerate).toBe(false);
   });
 
-  it('always includes regenerationAdvisory when mayRegenerate is true', () => {
+  it('retains regenerationAdvisory when mayRegenerate is true', () => {
     const registry: readonly ComponentStatusRegistryEntry[] = [
       {
         componentId: 'regen-enabled',
         blueprintRef: 'blueprint-ref',
         artifactRef: 'artifact-ref',
         generatorRef: 'generator-ref',
-        mayRegenerate: true
+        mayRegenerate: true,
+        regenerationAdvisory: {
+          level: 'caution',
+          notes: ['Review generated output before acceptance.']
+        }
       }
     ];
 
@@ -75,7 +79,7 @@ describe('reportComponentStatuses', () => {
 
     const result = reportComponentStatuses({ registry, resolver });
 
-    expect(Boolean(result[0]?.regenerationAdvisory)).toBe(true);
+    expect(result[0]?.regenerationAdvisory?.level).toBe('caution');
   });
 
   it('defaults accessibility conformance to unknown when omitted', () => {

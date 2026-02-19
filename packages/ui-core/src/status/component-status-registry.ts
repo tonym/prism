@@ -6,11 +6,35 @@ import {
   blueprintRefForComponent,
   componentGeneratorRef
 } from '../generator/refs.js';
-import type { ComponentStatusRegistryEntry } from './types.js';
+import type {
+  ComponentAccessibility,
+  ComponentRegenerationAdvisory,
+  ComponentStatusRegistryEntry,
+  ComponentVersion
+} from './types.js';
 
 const generatorIdentityInput = stableSerialize(componentGeneratorIdentity);
 
-const registryOverrides: Record<string, Partial<ComponentStatusRegistryEntry>> = {
+interface RegistryOverrideBase {
+  accessibility?: ComponentAccessibility;
+  statusFlags?: string[];
+  version?: ComponentVersion;
+}
+
+type RegistryOverride =
+  RegistryOverrideBase &
+    (
+      | {
+          mayRegenerate: true;
+          regenerationAdvisory: ComponentRegenerationAdvisory;
+        }
+      | {
+          mayRegenerate?: false;
+          regenerationAdvisory?: never;
+        }
+    );
+
+const registryOverrides: Record<string, RegistryOverride> = {
   'icon-button': {
     accessibility: {
       conformance: 'partial',
@@ -45,14 +69,30 @@ export const componentStatusRegistry: readonly ComponentStatusRegistryEntry[] = 
     .map((blueprint) => {
       const override = registryOverrides[blueprint.componentId] ?? {};
 
-      return {
+      const baseEntry = {
         componentId: blueprint.componentId,
         blueprintRef: blueprintRefForComponent(blueprint.componentId),
         artifactRef: artifactRefForComponent(blueprint.componentId),
         generatorRef: componentGeneratorRef,
         generatorIdentityInput,
-        version: 'dev',
-        ...override
+        version: override.version ?? 'dev',
+        accessibility: override.accessibility,
+        statusFlags: override.statusFlags
+      };
+
+      if (override.mayRegenerate) {
+        return {
+          ...baseEntry,
+          mayRegenerate: true,
+          regenerationAdvisory: {
+            level: override.regenerationAdvisory.level,
+            notes: [...override.regenerationAdvisory.notes]
+          }
+        } satisfies ComponentStatusRegistryEntry;
+      }
+
+      return {
+        ...baseEntry
       } satisfies ComponentStatusRegistryEntry;
     })
 );

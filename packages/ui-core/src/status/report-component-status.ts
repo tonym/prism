@@ -2,7 +2,6 @@ import { stableHash } from '../determinism/stable-hash.js';
 
 import type {
   ComponentAccessibility,
-  ComponentRegenerationAdvisory,
   ComponentStatus,
   ComponentStatusRefResolver,
   ComponentStatusRegistryEntry
@@ -70,27 +69,6 @@ function resolveAccessibility(accessibility: ComponentAccessibility | undefined)
   return next;
 }
 
-function resolveRegenerationAdvisory(
-  mayRegenerate: boolean,
-  advisory: ComponentRegenerationAdvisory | undefined
-): ComponentRegenerationAdvisory | undefined {
-  if (!mayRegenerate) {
-    return undefined;
-  }
-
-  if (advisory) {
-    return {
-      level: advisory.level,
-      notes: [...advisory.notes]
-    };
-  }
-
-  return {
-    level: 'info',
-    notes: ['Regeneration is enabled in the component registry.']
-  };
-}
-
 export interface ReportComponentStatusesOptions {
   registry: readonly ComponentStatusRegistryEntry[];
   resolver: ComponentStatusRefResolver;
@@ -122,7 +100,18 @@ export function reportComponentStatuses(options: ReportComponentStatusesOptions)
       const blueprintHash = typeof blueprintContent === 'string' ? stableHash(blueprintContent) : MISSING_HASH;
       const artifactHash = typeof artifactContent === 'string' ? stableHash(artifactContent) : MISSING_HASH;
       const generatorHash = resolveGeneratorHash(entry, generatorContent);
-      const mayRegenerate = entry.mayRegenerate ?? false;
+
+      const regenerationState = entry.mayRegenerate
+        ? {
+            mayRegenerate: true as const,
+            regenerationAdvisory: {
+              level: entry.regenerationAdvisory.level,
+              notes: [...entry.regenerationAdvisory.notes]
+            }
+          }
+        : {
+            mayRegenerate: false as const
+          };
 
       const status: ComponentStatus = {
         componentId: entry.componentId,
@@ -134,12 +123,7 @@ export function reportComponentStatuses(options: ReportComponentStatusesOptions)
         generatorHash,
         version: entry.version ?? 'dev',
         accessibility: resolveAccessibility(entry.accessibility),
-        mayRegenerate
-      };
-
-      const regenerationAdvisory = resolveRegenerationAdvisory(mayRegenerate, entry.regenerationAdvisory);
-      if (regenerationAdvisory) {
-        status.regenerationAdvisory = regenerationAdvisory;
+        ...regenerationState
       }
 
       const dedupedFlags = sortedUnique(flags);
