@@ -59,6 +59,9 @@ export interface PrismTypographyScale {
   label: PrismTypographySizeScale;
 }
 
+export type PrismTypographyVariant = keyof PrismTypographyScale;
+export type PrismTypographySize = keyof PrismTypographySizeScale;
+
 export interface PrismShapeScale {
   none: string;
   extraSmall: string;
