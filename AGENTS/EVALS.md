@@ -89,15 +89,15 @@ Evals are **analysis**, not implementation.
 
 All evals live inside:
 
-packages/evals/src/**
+domains/evals/src/**
 
 Subdirectories should follow package domains:
 
-packages/evals/src/blueprints/**  
-packages/evals/src/pipelines/**  
-packages/evals/src/adapters/**  
-packages/evals/src/ui-core/**  
-packages/evals/src/storefront/**
+domains/evals/src/blueprints/**  
+domains/evals/src/pipelines/**  
+domains/evals/src/adapters/**  
+domains/evals/src/ui-core/**  
+domains/evals/src/storefront/**
 
 Evals may depend on:
 
@@ -150,7 +150,7 @@ Fixture data must be:
 
 Fixtures belong in:
 
-packages/evals/src/<domain>/fixtures/**
+domains/evals/src/<domain>/fixtures/**
 
 ### 5. Explicit Domain Segmentation
 Each domain has its own eval type:

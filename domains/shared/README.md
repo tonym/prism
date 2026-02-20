@@ -2,7 +2,7 @@
 
 `@prism/shared` contains foundational utilities, common types, helpers, and low-level building blocks used across the Prism workspace.
 
-While `@prism/blueprints` defines the *contracts* and `@prism/pipelines` defines the *logic*, the shared package provides the *infrastructure primitives* needed everywhere else.
+The shared domain provides foundational infrastructure primitives reused by other Prism domains.
 
 It is intentionally lightweight, stable, and dependency-minimal.
 
@@ -10,12 +10,12 @@ It is intentionally lightweight, stable, and dependency-minimal.
 
 ## 🎯 Purpose
 
-The shared package exists to centralize reusable logic that is **not** domain-specific, **not** pipeline-specific, and **not** tied to any external service.
+The shared domain exists to centralize reusable logic that is **not** domain-specific, **not** pipeline-specific, and **not** tied to any external service.
 
 It provides:
 
 ### **1. Utility functions**
-Small pieces of generic logic reused across packages, such as:
+Small pieces of generic logic reused across domains, such as:
 
 - safe JSON helpers
 - object/array manipulation
@@ -43,8 +43,8 @@ These form the baseline for consistent TypeScript structure throughout the codeb
 
 ---
 
-### **3. Cross-package helpers**
-Anything used by multiple packages but not specific to any one of them lives here.
+### **3. Cross-domain helpers**
+Anything used by multiple domains but not specific to any one of them lives here.
 
 Examples include:
 
@@ -58,7 +58,7 @@ Keeping these centralized keeps duplication low and consistency high.
 ---
 
 ### **4. Zero external dependencies**
-This package intentionally does **not** wrap third-party APIs or SDKs.
+This domain intentionally does **not** wrap third-party APIs or SDKs.
 That is the responsibility of `@prism/adapters`.
 
 Shared remains clean and deterministic.
@@ -68,7 +68,7 @@ Shared remains clean and deterministic.
 ## 🧠 Design Principles
 
 ### **Minimal**
-Only add things truly reused across packages.
+Only add things truly reused across domains.
 
 ### **Stable**
 Changes here affect the whole workspace — consistency is key.
@@ -104,4 +104,4 @@ It provides:
 - pure helpers
 - stable, dependency-free primitives
 
-Every other package in the monorepo can rely on `shared` without pulling in complexity.
+Every other domain in the monorepo can rely on `shared` without pulling in complexity.

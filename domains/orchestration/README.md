@@ -1,6 +1,6 @@
-# @prism/pipelines
+# @prism/orchestration
 
-`@prism/pipelines` contains Prism’s pipeline engine and the collection of reusable, composable pipeline modules that define how data and actions flow through the system.
+`@prism/orchestration` is Prism’s orchestration domain. It contains the pipeline engine and reusable, composable pipeline modules that define how data and actions flow through the system.
 
 Pipelines are the **core execution units** of Prism.
 They encapsulate structured, multi-step logic built from blueprint-defined contracts and adapter-powered integrations.
@@ -124,7 +124,7 @@ Possible extensions include:
 
 ## Summary
 
-`@prism/pipelines` is where Prism’s *logic* lives.
+`@prism/orchestration` is the orchestration domain where Prism’s sequencing logic lives.
 
 Pipelines:
 

@@ -79,7 +79,7 @@ Adapters must follow these invariants:
 Each adapter lives inside:
 
 ```
-packages/adapters/src/<vendor>/<feature>.adapter.ts
+domains/adapters/src/<vendor>/<feature>.adapter.ts
 ```
 
 No cross-vendor coupling is allowed.
@@ -125,7 +125,7 @@ When generating adapter files, agents must:
 Example adapter layout:
 
 ```
-packages/adapters/src/<vendor>/
+domains/adapters/src/<vendor>/
   auth.adapter.ts
   content.adapter.ts
   analytics.adapter.ts
@@ -186,13 +186,13 @@ All adapters must include:
 Tests live in:
 
 ```
-packages/adapters/src/**/__tests__/**
+domains/adapters/src/**/__tests__/**
 ```
 
 Mocks live in:
 
 ```
-packages/adapters/src/**/__mocks__/**
+domains/adapters/src/**/__mocks__/**
 ```
 
 ---

@@ -104,7 +104,7 @@ function parsePackageIdentity(content: string): PackageIdentity {
 function resolveUiCoreRootDirectory(startDirectory: string): string {
   const candidates = [
     startDirectory,
-    path.join(startDirectory, 'packages/ui-core')
+    path.join(startDirectory, 'domains/ui-core')
   ];
 
   for (const candidate of candidates) {

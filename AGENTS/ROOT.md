@@ -15,32 +15,32 @@ Prism is a modular monorepo built around strict package boundaries.
 Agents MUST respect these boundaries at all times.
 
 ### **Blueprints (source of truth for shapes & flows)**
-`packages/blueprints/`
+`domains/blueprints/`
 Defines contracts, schemas, UI structures, agent action contracts, and pipeline interface shapes.
 
 ### **Adapters (vendor integrations)**
-`packages/adapters/`
+`domains/adapters/`
 Contains *all external service integration logic* (LLMs, APIs, SDKs, databases).
 No other package may directly depend on external vendors.
 
 ### **Pipelines (execution & sequencing)**
-`packages/pipelines/`
+`domains/orchestration/`
 Implements validated workflows and ordered execution flows that consume adapters and blueprints.
 
 ### **Evals (quality & benchmarking)**
-`packages/evals/`
+`domains/evals/`
 Implements tests, scoring harnesses, regression checks, and evaluation pipelines.
 
 ### **Shared Utilities**
-`packages/shared/`
+`domains/shared/`
 Reusable helpers, logging, math, parsing, validation, and general-purpose utilities.
 
 ### **Storefront (application layer)**
-`packages/storefront/`
+`domains/storefront/`
 Implements app-level UI flows, routing, pages, and higher-level UX that uses UI Core.
 
 ### **UI Core (design system primitives)**
-`packages/ui-core/`
+`domains/ui-core/`
 Primitive UI building blocks, tokens, and blueprint → UI mappers.
 
 ---
@@ -163,26 +163,26 @@ These requirements ensure:
 When generating or modifying files, agents MUST follow these patterns:
 
 ### Blueprints
-`packages/blueprints/src/<domain>/<name>.contract.ts`
-`packages/blueprints/src/<domain>/<name>.schema.ts`
+`domains/blueprints/src/<domain>/<name>.contract.ts`
+`domains/blueprints/src/<domain>/<name>.schema.ts`
 
 ### Adapters
-`packages/adapters/src/<vendor>/<feature>.adapter.ts`
+`domains/adapters/src/<vendor>/<feature>.adapter.ts`
 
 ### Pipelines
-`packages/pipelines/src/<domain>/<name>.pipeline.ts`
+`domains/orchestration/src/<domain>/<name>.pipeline.ts`
 
 ### Evals
-`packages/evals/src/<domain>/<name>.eval.ts`
+`domains/evals/src/<domain>/<name>.eval.ts`
 
 ### Shared
-`packages/shared/src/<utility>.ts`
+`domains/shared/src/<utility>.ts`
 
 ### Storefront
-`packages/storefront/src/<feature>/<component>.tsx`
+`domains/storefront/src/<feature>/<component>.tsx`
 
 ### UI Core
-`packages/ui-core/src/<primitive>/<PrimitiveName>.tsx`
+`domains/ui-core/src/<primitive>/<PrimitiveName>.tsx`
 
 Agents MAY propose new subdirectories *within these boundaries*, but must never create new top-level packages.
 

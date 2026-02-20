@@ -58,14 +58,14 @@ Speculation belongs to orchestration and planning layers, not presentation.
 
 Storefront code lives exclusively in:
 
-packages/storefront/src/**
+domains/storefront/src/**
 
 Recommended structure:
 
-- packages/storefront/src/app/routes.ts  
-- packages/storefront/src/app/features/<feature>/<Feature>Page/  
-- packages/storefront/src/app/features/<feature>/components/  
-- packages/storefront/src/app/features/<feature>/services/ (UI-only, never business logic)
+- domains/storefront/src/app/routes.ts  
+- domains/storefront/src/app/features/<feature>/<Feature>Page/  
+- domains/storefront/src/app/features/<feature>/components/  
+- domains/storefront/src/app/features/<feature>/services/ (UI-only, never business logic)
 
 ### 2. Allowed Dependencies
 
@@ -155,7 +155,7 @@ Examples:
 
 Routes must be declared in:
 
-packages/storefront/src/app/routes.ts
+domains/storefront/src/app/routes.ts
 
 Rules:
 
@@ -247,7 +247,7 @@ Storefront must include:
 
 Tests live in:
 
-packages/storefront/src/**/__tests__/**
+domains/storefront/src/**/__tests__/**
 
 ---
 

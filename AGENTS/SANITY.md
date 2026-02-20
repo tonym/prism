@@ -52,13 +52,13 @@ Sanity must **not** include:
 Sanity code lives in:
 
 ```
-packages/sanity/**
+domains/sanity/**
 ```
 
 With recommended structure:
 
 ```
-packages/sanity/
+domains/sanity/
   src/
     schemas/
     queries/
@@ -215,13 +215,13 @@ Sanity package tests must validate:
 Tests live in:
 
 ```
-packages/sanity/src/**/__tests__/**
+domains/sanity/src/**/__tests__/**
 ```
 
 Mocks:
 
 ```
-packages/sanity/src/**/__fixtures__/**
+domains/sanity/src/**/__fixtures__/**
 ```
 
 Sanity tests must not:

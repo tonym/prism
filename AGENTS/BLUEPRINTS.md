@@ -79,7 +79,7 @@ Blueprints are upstream of orchestration, not downstream of it.
 Blueprints live only in:
 
 ```
-packages/blueprints/src/**
+domains/blueprints/src/**
 ```
 
 Other packages may **read** blueprint contracts but must never:
@@ -102,13 +102,13 @@ When generating or modifying blueprint files, agents must follow these rules:
 Contracts:
 
 ```
-packages/blueprints/src/<domain>/<name>.contract.ts
+domains/blueprints/src/<domain>/<name>.contract.ts
 ```
 
 Schemas:
 
 ```
-packages/blueprints/src/<domain>/<name>.schema.ts
+domains/blueprints/src/<domain>/<name>.schema.ts
 ```
 
 ### 2. Contract Rules
@@ -192,7 +192,7 @@ All blueprint changes must include:
 Blueprint tests live in:
 
 ```
-packages/blueprints/src/**/__tests__/**
+domains/blueprints/src/**/__tests__/**
 ```
 
 Blueprints do **not** include runtime tests.

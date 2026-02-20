@@ -13,10 +13,10 @@ The CLI is designed to be lightweight, predictable, and tightly aligned with Pri
 - Provide consistent tooling for pipelines, adapters, UI components, and workspace utilities
 - Integrate with blueprints to generate strongly-typed, consistent scaffolds
 - Offer a reliable automation surface for human and agent workflows
-- Reduce boilerplate and eliminate repetitive setup across packages
+- Reduce boilerplate and eliminate repetitive setup across domains
 
 The CLI is intentionally minimal — it does not bundle heavy dependencies or runtime logic.
-Instead, it focuses on providing ergonomic commands and deferring functionality to other packages when appropriate.
+Instead, it focuses on providing ergonomic commands and deferring functionality to other domains when appropriate.
 
 ---
 

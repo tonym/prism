@@ -7,7 +7,7 @@ They define the shapes, invariants, and intent of the system in a way that is:
 - implementation-agnostic
 - generative-agent friendly
 
-Blueprints are **never published** as a package. They exist solely to guide and constrain the rest of the workspace.
+Blueprints are **never published** to a registry. They exist solely to guide and constrain the rest of the workspace.
 
 ---
 
@@ -40,7 +40,7 @@ No runtime behavior, network calls, or side effects should appear in this packag
 
 ---
 
-## How other packages use blueprints
+## How other domains use blueprints
 
 Blueprints are consumed by generative and build-time tooling to produce:
 
@@ -56,7 +56,7 @@ Blueprints are consumed by generative and build-time tooling to produce:
   - Data flow shapes → pipeline composition and validation
   - Expected behaviors → test and eval scaffolding
 
-In all cases, blueprints act as the **single source of truth**. If a contract changes here, generated artifacts in other packages should be updated to match.
+In all cases, blueprints act as the **single source of truth**. If a contract changes here, generated artifacts in other domains should be updated to match.
 
 ---
 

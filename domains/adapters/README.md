@@ -22,7 +22,7 @@ Adapters translate these into the stable contract shapes defined in `@prism/blue
 
 ### **2. Encapsulate third-party dependencies**
 Vendor SDKs and HTTP clients live *exclusively* inside adapters.
-No other Prisma packages directly depend on external libraries.
+No other Prism domains directly depend on external libraries.
 
 This prevents dependency sprawl and preserves a clean architectural boundary.
 

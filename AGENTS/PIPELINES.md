@@ -45,7 +45,7 @@ Pipelines must **not** include:
 
 Pipelines live exclusively in:
 
-packages/pipelines/src/**
+domains/orchestration/src/**
 
 Pipelines may depend on:
 
@@ -70,12 +70,12 @@ All external access MUST flow through adapters.
 
 Pipeline modules follow:
 
-packages/pipelines/src/<domain>/<name>.pipeline.ts
+domains/orchestration/src/<domain>/<name>.pipeline.ts
 
 Optional supporting modules:
 
-packages/pipelines/src/<domain>/utils/**
-packages/pipelines/src/<domain>/steps/**
+domains/orchestration/src/<domain>/utils/**
+domains/orchestration/src/<domain>/steps/**
 
 Agents may propose new folders only within the domain boundary.
 
@@ -177,7 +177,7 @@ All pipeline changes must include:
 
 Tests live in:
 
-packages/pipelines/src/**/__tests__/**
+domains/orchestration/src/**/__tests__/**
 
 ---
 
