@@ -60,13 +60,13 @@ Agents **must not**:
 When generating or editing UI Core source files:
 
 - All component code resides in
-  `packages/ui-core/src/**`
+  `domains/ui-core/src/**`
 - Style tokens live in
-  `packages/ui-core/src/tokens/**`
+  `domains/ui-core/src/tokens/**`
 - Behavioral utilities live in
-  `packages/ui-core/src/utils/**`
+  `domains/ui-core/src/utils/**`
 - Blueprint mappers belong in
-  `packages/ui-core/src/blueprint/**`
+  `domains/ui-core/src/blueprint/**`
 
 Agents must check for existing patterns before creating new files.
 If no pattern exists, propose one and wait for human approval.
@@ -83,7 +83,7 @@ All changes must include:
 - Validation against existing blueprint contracts
 
 Tests live at:
-`packages/ui-core/src/**/__tests__/**`
+`domains/ui-core/src/**/__tests__/**`
 
 ---
 
@@ -100,13 +100,13 @@ All docs live in the same folder as the component.
 
 ---
 
-## 🧩 Interaction With Other Packages
+## 🧩 Interaction With Other Domains
 
 - **Blueprints:** define the allowed shapes agents use to construct UI.
 - **Storefront:** consumes UI Core to render actual product surfaces.
 - **Pipelines/Agents:** may output UI blueprints, which map into UI Core.
 
-UI Core is *never* allowed to depend on these packages.
+UI Core is *never* allowed to depend on these domains.
 
 ---
 

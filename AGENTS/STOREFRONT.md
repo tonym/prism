@@ -58,14 +58,14 @@ Speculation belongs to orchestration and planning layers, not presentation.
 
 Storefront code lives exclusively in:
 
-packages/storefront/src/**
+domains/storefront/src/**
 
 Recommended structure:
 
-- packages/storefront/src/app/routes.ts  
-- packages/storefront/src/app/features/<feature>/<Feature>Page/  
-- packages/storefront/src/app/features/<feature>/components/  
-- packages/storefront/src/app/features/<feature>/services/ (UI-only, never business logic)
+- domains/storefront/src/app/routes.ts  
+- domains/storefront/src/app/features/<feature>/<Feature>Page/  
+- domains/storefront/src/app/features/<feature>/components/  
+- domains/storefront/src/app/features/<feature>/services/ (UI-only, never business logic)
 
 ### 2. Allowed Dependencies
 
@@ -155,7 +155,7 @@ Examples:
 
 Routes must be declared in:
 
-packages/storefront/src/app/routes.ts
+domains/storefront/src/app/routes.ts
 
 Rules:
 
@@ -247,7 +247,7 @@ Storefront must include:
 
 Tests live in:
 
-packages/storefront/src/**/__tests__/**
+domains/storefront/src/**/__tests__/**
 
 ---
 
@@ -279,5 +279,3 @@ Agents modifying Storefront must:
 - Request human approval if a change implies new blueprints or pipeline behavior  
 
 By following this protocol, agents ensure that Prism’s Angular Storefront layer stays maintainable, predictable, and aligned with the rest of the system — enabling rapid, high-quality UI development across features and flows.
-
----# Storefront Protocol

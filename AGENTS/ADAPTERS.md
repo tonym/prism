@@ -79,7 +79,7 @@ Adapters must follow these invariants:
 Each adapter lives inside:
 
 ```
-packages/adapters/src/<vendor>/<feature>.adapter.ts
+domains/adapters/src/<vendor>/<feature>.adapter.ts
 ```
 
 No cross-vendor coupling is allowed.
@@ -125,7 +125,7 @@ When generating adapter files, agents must:
 Example adapter layout:
 
 ```
-packages/adapters/src/<vendor>/
+domains/adapters/src/<vendor>/
   auth.adapter.ts
   content.adapter.ts
   analytics.adapter.ts
@@ -186,13 +186,13 @@ All adapters must include:
 Tests live in:
 
 ```
-packages/adapters/src/**/__tests__/**
+domains/adapters/src/**/__tests__/**
 ```
 
 Mocks live in:
 
 ```
-packages/adapters/src/**/__mocks__/**
+domains/adapters/src/**/__mocks__/**
 ```
 
 ---
@@ -212,7 +212,7 @@ Optionally, an adjacent Markdown file may describe complex vendor quirks.
 
 ---
 
-## 🔗 Interaction With Other Packages
+## 🔗 Interaction With Other Domains
 
 ### Pipelines
 Consume adapters as their only I/O boundary.
@@ -243,5 +243,3 @@ Agents working with Adapters must:
 - Provide full tests and documentation  
 
 By following these rules, agents ensure that Prism’s Adapters remain stable, deterministic, and interoperable — forming a reliable substrate for all orchestrated flows in the system.
-
----# Adapters Protocol

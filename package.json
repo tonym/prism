@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.9.0",
   "workspaces": [
-    "packages/*"
+    "domains/*"
   ],
   "scripts": {
     "build": "pnpm -r build",

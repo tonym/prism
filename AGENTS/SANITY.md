@@ -1,15 +1,15 @@
 # Sanity Protocol
 
-This document defines how agents must interact with Prism’s **Sanity package** — the system responsible for content schemas, Studio configuration, GROQ queries, and typed content integration.
+This document defines how agents must interact with Prism’s **Sanity domain** — the system responsible for content schemas, Studio configuration, GROQ queries, and typed content integration.
 
 Sanity provides structured content models and an editor experience, but it is **not** a blueprint system, not a Storefront UI layer, and not an adapter.  
 It is a **content management layer** that must integrate cleanly into Prism’s architecture without driving business logic.
 
 ---
 
-## 🎯 Purpose of the Sanity Package
+## 🎯 Purpose of the Sanity Domain
 
-The Sanity package provides:
+The Sanity domain provides:
 
 - Structured content schemas (`schema.ts`, `object.ts`, `document.ts`)
 - A fully configured Sanity Studio (local or remote)
@@ -22,7 +22,7 @@ Sanity is the system of **content definition and content editing**, but not a sy
 
 ---
 
-## 📂 What the Sanity Package Contains
+## 📂 What the Sanity Domain Contains
 
 Sanity may include:
 
@@ -52,13 +52,13 @@ Sanity must **not** include:
 Sanity code lives in:
 
 ```
-packages/sanity/**
+domains/sanity/**
 ```
 
 With recommended structure:
 
 ```
-packages/sanity/
+domains/sanity/
   src/
     schemas/
     queries/
@@ -138,7 +138,7 @@ Sanity → never informs Blueprints
 
 ---
 
-## 🔁 Interaction With Other Packages
+## 🔁 Interaction With Other Domains
 
 ### Storefront
 
@@ -195,7 +195,7 @@ Queries must not include:
 
 ## 🧪 Testing Requirements
 
-Sanity package tests must validate:
+Sanity domain tests must validate:
 
 ### 1. Schema Validity
 - Schemas compile without warnings
@@ -215,13 +215,13 @@ Sanity package tests must validate:
 Tests live in:
 
 ```
-packages/sanity/src/**/__tests__/**
+domains/sanity/src/**/__tests__/**
 ```
 
 Mocks:
 
 ```
-packages/sanity/src/**/__fixtures__/**
+domains/sanity/src/**/__fixtures__/**
 ```
 
 Sanity tests must not:

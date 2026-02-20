@@ -1,0 +1,57 @@
+version: 1
+project: prism
+mode: machine_only
+
+canonical_terms:
+  orchestration_domain: domains/orchestration
+  orchestration_module_suffix: .pipeline.ts
+  workspace_import_pattern: "@prism/*"
+  cross_domain_relative_imports: forbidden
+
+protocol_precedence:
+  - /AGENTS/META.yml
+  - /AGENTS/PROTOCOL_MANIFEST.yml
+  - /AGENTS/ROOT.md
+  - /AGENTS/ORCHESTRATOR.md
+  - /AGENTS/ORCHESTRATION.md
+  - /AGENTS/ADAPTERS.md
+  - /AGENTS/BLUEPRINTS.md
+  - /AGENTS/EVALS.md
+  - /AGENTS/STOREFRONT.md
+  - /AGENTS/UI_CORE.md
+  - /AGENTS/SANITY.md
+
+required_read_order:
+  - /AGENTS/META.yml
+  - /AGENTS/PROTOCOL_MANIFEST.yml
+  - /AGENTS/ROOT.md
+
+role_protocols:
+  orchestrator:
+    - /AGENTS/ORCHESTRATOR.md
+    - /AGENTS/EVALS.md
+  worker:
+    - /AGENTS/ORCHESTRATION.md
+    - /AGENTS/ADAPTERS.md
+    - /AGENTS/BLUEPRINTS.md
+    - /AGENTS/STOREFRONT.md
+    - /AGENTS/UI_CORE.md
+    - /AGENTS/SANITY.md
+  eval:
+    - /AGENTS/EVALS.md
+
+domain_protocol_map:
+  orchestration: /AGENTS/ORCHESTRATION.md
+  adapters: /AGENTS/ADAPTERS.md
+  blueprints: /AGENTS/BLUEPRINTS.md
+  evals: /AGENTS/EVALS.md
+  storefront: /AGENTS/STOREFRONT.md
+  ui_core: /AGENTS/UI_CORE.md
+  sanity: /AGENTS/SANITY.md
+
+canonical_meta_keys:
+  orchestrator_action_select: select_orchestration_flows
+  architectural_rule_orchestration_blueprint: orchestration_must_use_blueprints
+  architectural_rule_cross_domain_imports: no_cross_domain_imports_outside_public_contracts
+  write_permission_orchestration: orchestration
+  stability_key_orchestration: orchestration

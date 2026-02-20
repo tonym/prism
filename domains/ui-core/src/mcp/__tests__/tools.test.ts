@@ -12,7 +12,7 @@ function resolveUiCoreRootForTests(): string {
     };
   };
   const cwd = runtime.process?.cwd?.() ?? '';
-  return cwd.endsWith('/packages/ui-core') ? cwd : `${cwd}/packages/ui-core`;
+  return cwd.endsWith('/domains/ui-core') ? cwd : `${cwd}/domains/ui-core`;
 }
 
 function createHandlers() {

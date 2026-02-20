@@ -1,6 +1,6 @@
 # Angular Package Agent Instructions  
 Extends: `AGENTS/ROOT.md` (global governance)  
-Scope: `packages/storefront/**`
+Scope: `domains/storefront/**`
 
 These instructions define **Angular-specific constraints**, **best practices**, and **allowed behaviors** for agents working inside the `storefront` package. They do **not** override root protocols; they only specialize them for Angular v21+.
 
@@ -10,7 +10,7 @@ These instructions define **Angular-specific constraints**, **best practices**, 
 The `storefront` package implements the Angular application layer of the Prism ecosystem.  
 Agents working here must:
 
-- Only edit files inside `packages/storefront/**`
+- Only edit files inside `domains/storefront/**`
 - Follow Angular v21+ best practices
 - Maintain deterministic, maintainable, and accessible code
 - Respect Prism package boundaries: you may import public exports from other packages (for example ui-core, future ui-* packages, shared, or other Prism packages), but must not edit their files or import from their internal/unstable paths
@@ -140,12 +140,12 @@ Accessibility issues are considered **violations** of Prism’s agent protocols.
 # Package-Level Rules  
 These constraints ensure safe operation inside the Prism monorepo.
 
-- Only edit files in `packages/storefront/**`.
+- Only edit files in `domains/storefront/**`.
 - Never modify another package’s files or reference their internal paths.  
   You may import from their public API entrypoints (for example `@prism/ui-core`, future `@prism/ui-*` packages, or `@prism/shared`), but must not access `/src`, `/internal`, or other unstable file paths.- All tests must remain deterministic and follow Prism’s root test conventions.
 - All code generation must adhere to the Angular best practices above.
 - All output must pass TypeScript strict mode.
-- All test files in `packages/storefront/**` must include complete unit test coverage for every public component, service, pipe, and utility.
+- All test files in `domains/storefront/**` must include complete unit test coverage for every public component, service, pipe, and utility.
 - All storefront tests **must pass** and adhere to Prism’s global test conventions (strict determinism, one expect per `it()`, no snapshots, tables permitted).
 
 ---

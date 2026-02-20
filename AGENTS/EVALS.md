@@ -3,7 +3,7 @@
 This document defines how agents must create, maintain, and execute evaluation frameworks ("evals") inside the Prism ecosystem.  
 Evals are the quality and regression backbone for Prism’s hub-and-spoke architecture.
 
-Evals ensure that pipelines, adapters, blueprints, UI Core primitives, and Storefront behavior remain **deterministic, consistent, and aligned with the AGENTS specifications**.
+Evals ensure that orchestration modules, adapters, blueprints, UI Core primitives, and Storefront behavior remain **deterministic, consistent, and aligned with the AGENTS specifications**.
 
 ---
 
@@ -12,7 +12,7 @@ Evals ensure that pipelines, adapters, blueprints, UI Core primitives, and Store
 Evals provide:
 
 - Automated regression checks for all agent-generated code  
-- Deterministic validation of pipelines, adapters, UI Core, and Storefront  
+- Deterministic validation of orchestration modules, adapters, UI Core, and Storefront  
 - Scoring and comparison over time (baseline vs. proposed changes)  
 - Guardrails preventing accidental architectural violations  
 - Safety checks for orchestrated agents  
@@ -64,11 +64,11 @@ Evals define **whether a plan, change, or output is acceptable**, not whether it
 
 Evals may include:
 
-- Test harnesses for deterministic pipeline outputs  
+- Test harnesses for deterministic orchestration outputs  
 - Schema compliance checks against blueprints  
 - Adapter behavior normalization tests  
 - UI Core primitive stability checks  
-- Storefront flow tests using mocked pipelines  
+- Storefront flow tests using mocked orchestration modules  
 - Scoring logic (pass/fail or graded)  
 - Fixture data representing known-good scenarios  
 - Regression snapshots where appropriate  
@@ -89,20 +89,20 @@ Evals are **analysis**, not implementation.
 
 All evals live inside:
 
-packages/evals/src/**
+domains/evals/src/**
 
-Subdirectories should follow package domains:
+Subdirectories should follow domain groups:
 
-packages/evals/src/blueprints/**  
-packages/evals/src/pipelines/**  
-packages/evals/src/adapters/**  
-packages/evals/src/ui-core/**  
-packages/evals/src/storefront/**
+domains/evals/src/blueprints/**  
+domains/evals/src/orchestration/**  
+domains/evals/src/adapters/**  
+domains/evals/src/ui-core/**  
+domains/evals/src/storefront/**
 
 Evals may depend on:
 
 - Blueprints  
-- Pipelines (mocked adapters only)  
+- Orchestration modules (mocked adapters only)  
 - UI Core primitives  
 - Storefront components (with mocks)  
 - Shared utilities  
@@ -137,7 +137,7 @@ Scoring must be:
 
 Examples:
 
-- “Does the pipeline produce the expected blueprint shape?”  
+- “Does the orchestration flow produce the expected blueprint shape?”  
 - “Does the adapter normalize vendor responses correctly?”  
 - “Does the UI Core primitive output the same DOM tree?”  
 
@@ -150,13 +150,13 @@ Fixture data must be:
 
 Fixtures belong in:
 
-packages/evals/src/<domain>/fixtures/**
+domains/evals/src/<domain>/fixtures/**
 
 ### 5. Explicit Domain Segmentation
 Each domain has its own eval type:
 
 - **Blueprint Evals** → shape, schema alignment  
-- **Pipeline Evals** → flow correctness, determinism  
+- **Orchestration Evals** → flow correctness and determinism for pipeline modules  
 - **Adapter Evals** → normalization + error mapping  
 - **UI Core Evals** → snapshot stability + semantic output  
 - **Storefront Evals** → flow + route stability  
@@ -177,9 +177,9 @@ Blueprint evals must never validate UI or business rules.
 
 ---
 
-## 🔁 Pipeline Evals
+## 🔁 Orchestration Evals
 
-Pipeline evals MUST validate:
+Orchestration evals MUST validate:
 
 - Deterministic outputs for known inputs  
 - Structural compliance with blueprint schemas  
@@ -187,7 +187,7 @@ Pipeline evals MUST validate:
 - Error propagation behavior  
 - Domain-specific mapping logic  
 
-Pipeline evals MUST mock adapters.
+Orchestration evals MUST mock adapters.
 
 ---
 
@@ -224,7 +224,7 @@ Storefront evals MUST test:
 
 - Page-level routing  
 - Loading, empty, and error state behavior  
-- Pipeline integration (mocked)  
+- Orchestration integration (mocked)  
 - State transitions (signals)  
 - DOM behavior for primary flows  
 
@@ -240,7 +240,7 @@ Eval outcomes are binding and may not be overridden by orchestrators or workers.
 Agents create baselines whenever:
 
 - A blueprint changes  
-- A major pipeline update occurs  
+- A major orchestration flow update occurs  
 - UI Core primitives evolve  
 - Storefront flow changes are introduced  
 
@@ -300,5 +300,3 @@ Agents working with Evals must:
 - Provide clear documentation and fixtures  
 
 By following this protocol, agents ensure that Prism remains predictable, stable, and safe — enabling humans and orchestrators to trust automated contributions confidently.
-
----# Evals Protocol
