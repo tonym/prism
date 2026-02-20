@@ -1,12 +1,16 @@
 version: 1
 project: prism
 
+# Terminology note:
+# - "pipelines" identifiers in this file are legacy policy keys retained for CI compatibility.
+# - They map to the orchestration domain at /domains/orchestration.
+
 agents:
   allowed_operations:
     - read
     - propose_changes
     - write_limited
-    - generate_assets # components, adapters, pipelines, evals, docs
+    - generate_assets # components, adapters, orchestration pipeline modules, evals, docs
     - run_evals
     - format_code
     notes:
@@ -19,7 +23,7 @@ agents:
     - modify_license
     - publish_packages
     - create_or_modify_sensitive_secrets
-    - uncontrolled_file_generation # all new files must map to a blueprint, adapter, eval, or pipeline spec
+    - uncontrolled_file_generation # all new files must map to a blueprint, adapter, eval, or orchestration pipeline spec
 
   roles:
     orchestrator:
@@ -27,7 +31,7 @@ agents:
       scope: plan_only
       allowed_actions:
         - decompose_request
-        - select_pipelines
+        - select_pipelines # selects orchestration flows
         - coordinate_evals
         - request_human_approval
     worker:
@@ -46,7 +50,7 @@ guardrails:
     - adapters_must_depend_only_on_third_party_sdks
     - pipelines_must_use_blueprints
     - ui_generation_must_use_ui_core_primitives
-    - no_cross_package_imports_outside_public_contracts
+    - no_cross_package_imports_outside_public_contracts # legacy rule id; enforces cross-domain public-contract boundaries
     - new_features_require_blueprint_extension
 
   # Ensures deterministic, testable outputs
@@ -61,7 +65,7 @@ guardrails:
   write_permissions:
     blueprints: 'allowed_with_contract_alignment'
     adapters: 'allowed_with_provider_spec'
-    pipelines: 'allowed_with_validation'
+    pipelines: 'allowed_with_validation' # legacy key; maps to /domains/orchestration
     evals: 'allowed'
     ui-core: 'allowed_for_primitives_only'
     storefront: 'allowed_for_widgets_only'

@@ -94,7 +94,7 @@ domains/evals/src/**
 Subdirectories should follow domain groups:
 
 domains/evals/src/blueprints/**  
-domains/evals/src/pipelines/**  
+domains/evals/src/orchestration/**  
 domains/evals/src/adapters/**  
 domains/evals/src/ui-core/**  
 domains/evals/src/storefront/**
@@ -156,7 +156,7 @@ domains/evals/src/<domain>/fixtures/**
 Each domain has its own eval type:
 
 - **Blueprint Evals** → shape, schema alignment  
-- **Pipeline Evals** → flow correctness, determinism  
+- **Orchestration Evals** → flow correctness and determinism for pipeline modules  
 - **Adapter Evals** → normalization + error mapping  
 - **UI Core Evals** → snapshot stability + semantic output  
 - **Storefront Evals** → flow + route stability  
@@ -177,9 +177,9 @@ Blueprint evals must never validate UI or business rules.
 
 ---
 
-## 🔁 Pipeline Evals
+## 🔁 Orchestration Evals
 
-Pipeline evals MUST validate:
+Orchestration evals MUST validate:
 
 - Deterministic outputs for known inputs  
 - Structural compliance with blueprint schemas  
@@ -187,7 +187,7 @@ Pipeline evals MUST validate:
 - Error propagation behavior  
 - Domain-specific mapping logic  
 
-Pipeline evals MUST mock adapters.
+Orchestration evals MUST mock adapters.
 
 ---
 
@@ -240,7 +240,7 @@ Eval outcomes are binding and may not be overridden by orchestrators or workers.
 Agents create baselines whenever:
 
 - A blueprint changes  
-- A major pipeline update occurs  
+- A major orchestration flow update occurs  
 - UI Core primitives evolve  
 - Storefront flow changes are introduced  
 

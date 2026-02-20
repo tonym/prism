@@ -73,7 +73,7 @@ If a rule in any of these files contradicts code in the repo, the **AGENTS spec 
 All generated or modified code **must follow monorepo import boundaries**.
 
 **Allowed (Workspace Imports)**  
-Agents must import from **workspace packages by name**, never by relative paths:
+Agents must import from **workspace module names** (for example `@prism/*`), never by relative paths:
 
 ```ts
 import { Button } from '@prism/ui-core';

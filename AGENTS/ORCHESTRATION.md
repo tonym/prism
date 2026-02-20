@@ -6,9 +6,9 @@ The Orchestration domain is the primary execution layer of the hub-and-spoke mod
 
 ---
 
-## 🎯 Purpose of Pipelines
+## 🎯 Purpose of the Orchestration Domain
 
-Pipelines provide:
+The orchestration domain provides pipeline flows with:
 
 - Deterministic flows built from blueprint shapes
 - Domain-specific logic composed of small, testable units
@@ -16,13 +16,13 @@ Pipelines provide:
 - A stable substrate for executing plans produced by governed orchestrators
 - A safe execution layer for LLM-driven or human-driven workflows
 
-Pipelines describe **how data moves**, not business strategy or vendor logic.
+Pipeline flows describe **how data moves**, not business strategy or vendor logic.
 
 ---
 
-## 📦 What Pipelines Contain
+## 📦 What the Orchestration Domain Contains
 
-Pipelines may include:
+Orchestration modules may include:
 
 - Input/output interfaces imported from blueprints
 - Stateless transformation functions
@@ -31,7 +31,7 @@ Pipelines may include:
 - Validation steps (structural, not business rules)
 - Error-pattern definitions mapped to blueprint domains
 
-Pipelines must **not** include:
+Orchestration modules must **not** include:
 
 - Vendor-specific API details (handled by adapters)
 - UI code or rendering behavior
@@ -43,17 +43,17 @@ Pipelines must **not** include:
 
 ## 🧭 Required Architectural Boundaries
 
-Pipelines live exclusively in:
+Orchestration code lives exclusively in:
 
 domains/orchestration/src/**
 
-Pipelines may depend on:
+Orchestration modules may depend on:
 
 - Blueprints
 - Shared utilities
 - Adapters
 
-Pipelines must **never** depend on:
+Orchestration modules must **never** depend on:
 
 - Storefront (UI layer)
 - UI Core primitives
@@ -81,9 +81,9 @@ Agents may propose new folders only within the domain boundary.
 
 ---
 
-### 2. Pipeline Function Design
+### 2. Orchestration Flow Function Design
 
-Pipelines must:
+Orchestration flow functions must:
 
 - Be pure or as close to pure as possible
 - Accept explicit blueprint-defined inputs
@@ -91,7 +91,7 @@ Pipelines must:
 - Delegate side effects to adapters
 - Use descriptive function names (generateInvoice, hydratePageModel, etc.)
 
-Pipelines must not:
+Orchestration flow functions must not:
 
 - Mutate input data
 - Maintain internal mutable state
@@ -131,7 +131,7 @@ Pipeline modules may call adapters, but adapters:
 - Must accept/return blueprint-aligned shapes
 - Must encapsulate ALL vendor-specific details
 
-Pipelines may orchestrate:
+Orchestration flows may orchestrate:
 
 - Fan-out calls
 - Retry logic (structural only)
@@ -143,14 +143,14 @@ But must not embed vendor semantics or vendor assumptions.
 
 ## 🧩 Interaction With Blueprints
 
-Pipelines must:
+Orchestration flows must:
 
 - Use blueprints as the only contract source
 - Never redefine shapes
 - Never create local shadow types
 - Validate structure (not business rules) using schemas
 
-Every pipeline has at minimum:
+Every orchestration flow has at minimum:
 
 - A blueprint-defined input
 - A blueprint-defined output
@@ -161,7 +161,7 @@ If no blueprint exists, the agent must request human approval before proceeding.
 
 ## 🧪 Testing Requirements
 
-All pipeline changes must include:
+All orchestration-flow changes must include:
 
 ### Unit Tests
 - One test per function
@@ -183,7 +183,7 @@ domains/orchestration/src/**/__tests__/**
 
 ## 📄 Documentation Requirements
 
-Each pipeline must include:
+Each orchestration module must include:
 
 - A header comment explaining its purpose
 - A step-by-step outline or flow diagram
@@ -197,7 +197,7 @@ Supplemental Markdown documentation may be added alongside pipeline folders when
 
 ## Authority Boundary
 
-Pipelines do not decide what to execute.
+Orchestration modules do not decide what to execute.
 
 They execute plans produced by governed orchestrators in accordance with blueprint contracts and substrate validation rules.
 
@@ -207,7 +207,7 @@ Planning, decomposition, retries, escalation, and eval coordination are governed
 
 ## ✔️ Agent Behavior Summary
 
-Agents working on Pipelines must:
+Agents working on Orchestration must:
 
 - Preserve full blueprint alignment
 - Maintain purity and statelessness
