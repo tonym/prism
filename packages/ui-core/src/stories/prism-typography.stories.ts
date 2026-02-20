@@ -1,24 +1,60 @@
 import { storyFrame } from './story-frame.js';
 
+interface TypographyStoryArgs {
+  as: 'span' | 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label';
+  size: 'small' | 'medium' | 'large';
+  text: string;
+  variant: 'display' | 'headline' | 'title' | 'body' | 'label';
+}
+
+function renderTypography(args: TypographyStoryArgs): string {
+  return storyFrame(
+    `<prism-typography as="${args.as}" size="${args.size}" variant="${args.variant}">${args.text}</prism-typography>`
+  );
+}
+
 const meta = {
-  title: 'Components/Typography'
+  title: 'Components/Typography',
+  component: 'prism-typography',
+  argTypes: {
+    text: { control: 'text' },
+    variant: { control: 'select', options: ['display', 'headline', 'title', 'body', 'label'] },
+    size: { control: 'select', options: ['small', 'medium', 'large'] },
+    as: { control: 'select', options: ['span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label'] }
+  }
 };
 
 export default meta;
 
 export const Default = {
-  render: () =>
-    storyFrame('<prism-typography variant="body" size="medium">Body copy for Prism ui-core.</prism-typography>')
+  args: {
+    text: 'Body copy for Prism ui-core.',
+    variant: 'body',
+    size: 'medium',
+    as: 'span'
+  },
+  render: renderTypography
 };
 
 export const HeadlineLarge = {
-  render: () =>
-    storyFrame('<prism-typography as="h2" variant="headline" size="large">Section Heading</prism-typography>')
+  args: {
+    text: 'Section Heading',
+    variant: 'headline',
+    size: 'large',
+    as: 'h2'
+  },
+  render: renderTypography
 };
 
 export const ThemeOnSurfaceOverride = {
-  render: () =>
-    storyFrame('<prism-typography variant="title" size="medium">Overridden text color</prism-typography>', {
+  args: {
+    text: 'Overridden text color',
+    variant: 'title',
+    size: 'medium',
+    as: 'span'
+  },
+  render: (args: TypographyStoryArgs) =>
+    storyFrame(`<prism-typography as="${args.as}" size="${args.size}" variant="${args.variant}">${args.text}</prism-typography>`, {
       cssVariableOverride: '--prism-color-on-surface: #3b1366;'
     })
 };

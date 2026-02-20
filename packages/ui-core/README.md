@@ -37,6 +37,7 @@ The Storybook preview loads these artifacts globally:
 - generated custom element registrations (`@prism/ui-core/generated/components`)
 
 Stories use real `<prism-*>` elements and include focused examples that override one `--prism-*` CSS variable at the story wrapper level to verify custom-property cascade into Shadow DOM-rendered components.
+Canvas inspection uses built-in Controls (args/argTypes) and the Accessibility panel (`@storybook/addon-a11y`) for quick interactive and a11y checks during local inspection.
 
 ## Public API
 
