@@ -140,3 +140,4 @@ vite.config.ts.timestamp-*
 
 # Prism domain temp build outputs
 domains/ui-core/.tmp-*/
+domains/ui-core/storybook-static/

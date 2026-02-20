@@ -35,6 +35,10 @@ Implements tests, scoring harnesses, regression checks, and evaluation suites fo
 `domains/shared/`
 Reusable helpers, logging, math, parsing, validation, and general-purpose utilities.
 
+### **Sanity (content domain)**
+`domains/sanity/`
+Owns content schemas, studio configuration, and query/mapping contracts for content workflows.
+
 ### **Storefront (application layer)**
 `domains/storefront/`
 Implements app-level UI flows, routing, pages, and higher-level UX that uses UI Core.
@@ -53,6 +57,7 @@ The following protocol files define the rules for each domain:
 - `/AGENTS/BLUEPRINTS.md` — Structure and rules for blueprint creation & updates.
 - `/AGENTS/EVALS.md` — How to create eval harnesses, tests, and scoring logic.
 - `/AGENTS/ORCHESTRATION.md` — How to build orchestration pipeline modules aligned with blueprints.
+- `/AGENTS/SANITY.md` — Rules for the content domain, including schemas, studio, and content query boundaries.
 - `/AGENTS/STOREFRONT.md` — Rules for Storefront contributions.
 - `/AGENTS/UI_CORE.md` — How agents should construct or modify UI primitives.
 - `/AGENTS/META.yml` — Global metadata, versions, and protocol alignment info.
@@ -178,6 +183,9 @@ When generating or modifying files, agents MUST follow these patterns:
 
 ### Shared
 `domains/shared/src/<utility>.ts`
+
+### Sanity
+`domains/sanity/src/<domain>/<name>.ts`
 
 ### Storefront
 `domains/storefront/src/<feature>/<component>.tsx`
