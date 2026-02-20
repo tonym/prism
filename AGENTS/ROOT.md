@@ -11,7 +11,7 @@ Agents should treat this folder as the authoritative protocol layer for how Pris
 
 ## 🧭 Canonical Architecture Overview
 
-Prism is a modular monorepo built around strict package boundaries.
+Prism is a modular monorepo built around strict domain boundaries.
 Agents MUST respect these boundaries at all times.
 
 ### **Blueprints (source of truth for shapes & flows)**
@@ -21,7 +21,7 @@ Defines contracts, schemas, UI structures, agent action contracts, and pipeline 
 ### **Adapters (vendor integrations)**
 `domains/adapters/`
 Contains *all external service integration logic* (LLMs, APIs, SDKs, databases).
-No other package may directly depend on external vendors.
+No other domain may directly depend on external vendors.
 
 ### **Pipelines (execution & sequencing)**
 `domains/orchestration/`
@@ -52,7 +52,7 @@ The following protocol files define the rules for each domain:
 - `/AGENTS/ADAPTERS.md` — How to generate or modify adapter integrations.
 - `/AGENTS/BLUEPRINTS.md` — Structure and rules for blueprint creation & updates.
 - `/AGENTS/EVALS.md` — How to create eval harnesses, tests, and scoring logic.
-- `/AGENTS/PIPELINES.md` — How to build pipeline modules aligned with blueprints.
+- `/AGENTS/ORCHESTRATION.md` — How to build pipeline modules aligned with blueprints.
 - `/AGENTS/STOREFRONT.md` — Rules for Storefront contributions.
 - `/AGENTS/UI_CORE.md` — How agents should construct or modify UI primitives.
 - `/AGENTS/META.yml` — Global metadata, versions, and protocol alignment info.
@@ -65,14 +65,14 @@ If a rule in any of these files contradicts code in the repo, the **AGENTS spec 
 
 ## 🛡️ Operating Rules for All Agents
 
-1. **Respect Package Boundaries**
-   Never introduce cross-package dependencies that violate architectural lines.
+1. **Respect Domain Boundaries**
+   Never introduce cross-domain dependencies that violate architectural lines.
    
 2. **Global Import Rules (Required for All Agents)**
 
 All generated or modified code **must follow monorepo import boundaries**.
 
-**Allowed (Package Imports)**  
+**Allowed (Workspace Imports)**  
 Agents must import from **workspace packages by name**, never by relative paths:
 
 ```ts
@@ -82,8 +82,8 @@ import { productSchema } from '@prism/sanity';
 import { formatPrice } from '@prism/shared';
 ```
 
-**Not Allowed (Relative Cross-Package Paths)**  
-Agents must **never** generate imports that cross package boundaries via relative paths:
+**Not Allowed (Relative Cross-Domain Paths)**  
+Agents must **never** generate imports that cross domain boundaries via relative paths:
 
 ```ts
 import { Button } from '../../ui-core/src/components/Button';
@@ -91,9 +91,9 @@ import { something } from '../../../shared/utils';
 ```
 
 **Enforcement**
-- Applies to all packages and domains (UI, Angular, adapters, pipelines, evals, etc).
+- Applies to all domains (UI, Angular, adapters, pipelines, evals, etc).
 - Agents must refuse or fail output that violates import boundaries.
-- Relative imports *within* the same package are allowed and expected.
+- Relative imports *within* the same workspace module are allowed and expected.
 
 Following this rule guarantees:
 - deterministic builds  
@@ -112,7 +112,7 @@ Following this rule guarantees:
    Code generation must be stable, predictable, and strictly follow conventions defined in AGENTS protocols.
 
 6. **Adhere to Canonical Paths**
-   Only generate files in locations consistent with the package directory rules.
+   Only generate files in locations consistent with the domain directory rules.
 
 7. **Never Guess**
    If a requirement is ambiguous or a file is missing, the agent MUST ask for human clarification.
@@ -124,12 +124,12 @@ Following this rule guarantees:
 
 All generated or modified code **must include complete, deterministic test coverage**.
 
-**Requirements (applies to every package and domain):**
+**Requirements (applies to every domain):**
 - Every new component, utility, adapter, pipeline, or blueprint MUST include a corresponding test file as a sibling to the tested file in the same folder.
 - Tests MUST use exactly one `expect()` per `it()` — including table-driven tests, which MUST have at most one `expect()` per test case.
 - Table-driven tests are allowed and encouraged for inputs with clear permutations.
 - All tests MUST pass before an agent considers a task complete.
-- Tests MUST follow the directory and naming structure defined by the package (e.g., `__tests__`, mirroring file paths, or package-specific conventions).
+- Tests MUST follow the directory and naming structure defined by the domain (e.g., `__tests__`, mirroring file paths, or domain-specific conventions).
 - Agents MUST NOT introduce snapshot tests.
 - Tests MUST remain hermetic and deterministic—no reliance on external services or nondeterministic timers.
 
@@ -154,7 +154,7 @@ These requirements ensure:
 - predictable system behavior  
 - safe refactoring  
 - verifiable agent output  
-- consistent structure across all packages
+- consistent structure across all domains
 
 ---
 
@@ -184,7 +184,7 @@ When generating or modifying files, agents MUST follow these patterns:
 ### UI Core
 `domains/ui-core/src/<primitive>/<PrimitiveName>.tsx`
 
-Agents MAY propose new subdirectories *within these boundaries*, but must never create new top-level packages.
+Agents MAY propose new subdirectories *within these boundaries*, but must never create new top-level domains.
 
 ---
 

@@ -212,7 +212,7 @@ Optionally, an adjacent Markdown file may describe complex vendor quirks.
 
 ---
 
-## 🔗 Interaction With Other Packages
+## 🔗 Interaction With Other Domains
 
 ### Pipelines
 Consume adapters as their only I/O boundary.
@@ -243,5 +243,3 @@ Agents working with Adapters must:
 - Provide full tests and documentation  
 
 By following these rules, agents ensure that Prism’s Adapters remain stable, deterministic, and interoperable — forming a reliable substrate for all orchestrated flows in the system.
-
----# Adapters Protocol

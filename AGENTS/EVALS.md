@@ -91,7 +91,7 @@ All evals live inside:
 
 domains/evals/src/**
 
-Subdirectories should follow package domains:
+Subdirectories should follow domain groups:
 
 domains/evals/src/blueprints/**  
 domains/evals/src/pipelines/**  
@@ -300,5 +300,3 @@ Agents working with Evals must:
 - Provide clear documentation and fixtures  
 
 By following this protocol, agents ensure that Prism remains predictable, stable, and safe — enabling humans and orchestrators to trust automated contributions confidently.
-
----# Evals Protocol

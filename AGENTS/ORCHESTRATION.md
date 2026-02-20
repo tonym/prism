@@ -1,8 +1,8 @@
-# Pipelines Protocol
+# Orchestration Protocol
 
-This document defines how agents must create, update, and maintain Prism Pipelines — the validated execution flows that transform blueprint-defined structures into actionable logic across the Prism ecosystem.
+This document defines how agents must create, update, and maintain Prism’s Orchestration domain — the validated execution flows that transform blueprint-defined structures into actionable logic across the Prism ecosystem.
 
-Pipelines are the primary execution layer of the hub-and-spoke model. They consume blueprint contracts, coordinate adapters, and shape UI-ready outputs. Pipelines must remain predictable, composable, and fully aligned with the orchestrating agent’s guidance.
+The Orchestration domain is the primary execution layer of the hub-and-spoke model. It contains pipeline modules that consume blueprint contracts, coordinate adapters, and shape UI-ready outputs. Pipeline flows must remain predictable, composable, and fully aligned with the orchestrating agent’s guidance.
 
 ---
 
@@ -217,4 +217,4 @@ Agents working on Pipelines must:
 - Provide tests and documentation for all updates
 - Request human approval when required shapes or flows are unclear
 
-By following this protocol, agents ensure that Prism Pipelines remain predictable, composable, and principled — forming the core execution layer powering the hub-and-spoke architecture.# Pipelines Protocol
+By following this protocol, agents ensure that Prism orchestration flows remain predictable, composable, and principled — forming the core execution layer powering the hub-and-spoke architecture.

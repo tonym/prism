@@ -100,13 +100,13 @@ All docs live in the same folder as the component.
 
 ---
 
-## 🧩 Interaction With Other Packages
+## 🧩 Interaction With Other Domains
 
 - **Blueprints:** define the allowed shapes agents use to construct UI.
 - **Storefront:** consumes UI Core to render actual product surfaces.
 - **Pipelines/Agents:** may output UI blueprints, which map into UI Core.
 
-UI Core is *never* allowed to depend on these packages.
+UI Core is *never* allowed to depend on these domains.
 
 ---
 

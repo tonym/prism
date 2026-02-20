@@ -13,7 +13,7 @@ Blueprints provide:
 * Canonical structural definitions for domains (UI, pipelines, data flows)
 * Declarative contracts for agents and orchestrators
 * Versioned schemas that evolve safely over time
-* A stable foundation for agent-driven generation across packages
+* A stable foundation for agent-driven generation across domains
 * A shared specification for humans and agents to collaborate
 
 Agents must treat blueprints as the **authoritative source of truth** for all structural work.
@@ -44,7 +44,7 @@ Blueprints define:
 * Interfaces for flows and pipelines
 * UI-intent contracts (abstract props, component families)
 * Data schemas for orchestration
-* Cross-package agreements (UI Core ↔ Storefront ↔ Pipelines ↔ Adapters)
+* Cross-domain agreements (UI Core ↔ Storefront ↔ Pipelines ↔ Adapters)
 
 Blueprints must **not** contain:
 
@@ -82,11 +82,11 @@ Blueprints live only in:
 domains/blueprints/src/**
 ```
 
-Other packages may **read** blueprint contracts but must never:
+Other domains may **read** blueprint contracts but must never:
 
 * Modify blueprint files
 * Inline blueprint types
-* Duplicate or mirror blueprint structures outside this package
+* Duplicate or mirror blueprint structures outside this domain
 
 All agent-generated code must reference blueprint types **directly**.
 If no appropriate blueprint exists, agents and orchestrators must stop and request human approval before proceeding.
@@ -170,7 +170,7 @@ Agents making breaking changes must:
 
 * Document intent in the file header
 * Update all corresponding schemas
-* Update dependent tests across affected packages
+* Update dependent tests across affected domains
 * Note the change in the commit message or orchestrator yield
 
 ### 3. Deprecations
@@ -215,7 +215,7 @@ Documentation lives:
 
 ---
 
-## 🔗 Interaction With Other Packages
+## 🔗 Interaction With Other Domains
 
 ### UI Core
 
@@ -255,6 +255,6 @@ Agents working with Blueprints must:
 * Prefer minimal diffs and pattern reuse
 * Provide tests and documentation for all updates
 
-By following this protocol, agents ensure that Prism’s blueprints remain stable, expressive, scalable, and aligned across all packages — forming the structural foundation that orchestrated agents and humans will rely on.
+By following this protocol, agents ensure that Prism’s blueprints remain stable, expressive, scalable, and aligned across all domains — forming the structural foundation that orchestrated agents and humans will rely on.
 
 ---

@@ -279,5 +279,3 @@ Agents modifying Storefront must:
 - Request human approval if a change implies new blueprints or pipeline behavior  
 
 By following this protocol, agents ensure that Prism’s Angular Storefront layer stays maintainable, predictable, and aligned with the rest of the system — enabling rapid, high-quality UI development across features and flows.
-
----# Storefront Protocol
