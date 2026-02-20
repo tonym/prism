@@ -22,6 +22,7 @@
     "storybook:build": "storybook build"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^10.2.10",
     "@storybook/web-components-vite": "^10.2.10",
     "storybook": "^10.2.10",
     "vitest": "^4.0.8"

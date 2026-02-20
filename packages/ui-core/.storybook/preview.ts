@@ -8,7 +8,13 @@ registerGeneratedPrismComponents();
 const preview: Preview = {
   parameters: {
     controls: {
-      disable: true
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/
+      }
+    },
+    a11y: {
+      context: 'body'
     }
   }
 };
