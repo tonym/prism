@@ -9,6 +9,36 @@ Phase 2 introduces generated, theme-driven primitives while keeping deterministi
 - `Typography` (`prism-typography`)
 - `Surface/Card` (`prism-surface`)
 
+## Storybook Workbench (Internal)
+
+`@prism/ui-core` includes a Storybook workbench for the ui-core domain team to inspect generated Web Components locally.
+
+This workbench is:
+
+- an internal inspection surface for ui-core maintainers
+- loaded directly from local `@prism/ui-core` workspace artifacts
+
+This workbench is not:
+
+- an MCP interface
+- a package distribution surface
+- a customization-by-proxy mechanism
+
+Run from the repo root:
+
+```bash
+pnpm --filter @prism/ui-core storybook
+```
+
+The Storybook preview loads these artifacts globally:
+
+- base theme CSS defaults (`@prism/ui-core/generated/theme/base.css`)
+- base fonts CSS (`@prism/ui-core/generated/fonts/base.css`)
+- generated custom element registrations (`@prism/ui-core/generated/components`)
+
+Stories use real `<prism-*>` elements and include focused examples that override one `--prism-*` CSS variable at the story wrapper level to verify custom-property cascade into Shadow DOM-rendered components.
+Canvas inspection uses built-in Controls (args/argTypes) and the Accessibility panel (`@storybook/addon-a11y`) for quick interactive and a11y checks during local inspection.
+
 ## Public API
 
 The package exports:
