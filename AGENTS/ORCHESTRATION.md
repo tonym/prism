@@ -2,13 +2,13 @@
 
 This document defines how agents must create, update, and maintain Prism’s Orchestration domain — the validated execution flows that transform blueprint-defined structures into actionable logic across the Prism ecosystem.
 
-The Orchestration domain is the primary execution layer of the hub-and-spoke model. It contains pipeline modules that consume blueprint contracts, coordinate adapters, and shape UI-ready outputs. Pipeline flows must remain predictable, composable, and fully aligned with the orchestrating agent’s guidance.
+The Orchestration domain is the primary execution layer of the hub-and-spoke model. It contains orchestration modules (`*.pipeline.ts`) that consume blueprint contracts, coordinate adapters, and shape UI-ready outputs. Orchestration flows must remain predictable, composable, and fully aligned with the orchestrating agent’s guidance.
 
 ---
 
 ## 🎯 Purpose of the Orchestration Domain
 
-The orchestration domain provides pipeline flows with:
+The orchestration domain provides orchestration flows with:
 
 - Deterministic flows built from blueprint shapes
 - Domain-specific logic composed of small, testable units
@@ -16,7 +16,7 @@ The orchestration domain provides pipeline flows with:
 - A stable substrate for executing plans produced by governed orchestrators
 - A safe execution layer for LLM-driven or human-driven workflows
 
-Pipeline flows describe **how data moves**, not business strategy or vendor logic.
+Orchestration flows describe **how data moves**, not business strategy or vendor logic.
 
 ---
 
@@ -68,7 +68,7 @@ All external access MUST flow through adapters.
 
 ### 1. File Structure
 
-Pipeline modules follow:
+Orchestration modules follow:
 
 domains/orchestration/src/<domain>/<name>.pipeline.ts
 
@@ -100,7 +100,7 @@ Orchestration flow functions must not:
 
 ---
 
-### 3. Pipeline Flow Composition
+### 3. Orchestration Flow Composition
 
 Preferred composition pattern:
 
@@ -124,7 +124,7 @@ Agents must reuse existing flow-composition patterns where present.
 
 ## 🔁 Interaction With Adapters
 
-Pipeline modules may call adapters, but adapters:
+Orchestration modules may call adapters, but adapters:
 
 - Must be imported explicitly
 - Must never be wrapped in business logic
@@ -191,7 +191,7 @@ Each orchestration module must include:
 - References to blueprint contracts
 - Version history for breaking changes
 
-Supplemental Markdown documentation may be added alongside pipeline folders when appropriate.
+Supplemental Markdown documentation may be added alongside orchestration folders when appropriate.
 
 ---
 

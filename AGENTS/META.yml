@@ -1,29 +1,30 @@
 version: 1
 project: prism
-
-# Terminology note:
-# - "pipelines" identifiers in this file are legacy policy keys retained for CI compatibility.
-# - They map to the orchestration domain at /domains/orchestration.
+protocol_manifest: /AGENTS/PROTOCOL_MANIFEST.yml
 
 agents:
   allowed_operations:
     - read
     - propose_changes
     - write_limited
-    - generate_assets # components, adapters, orchestration pipeline modules, evals, docs
+    - generate_assets
     - run_evals
     - format_code
-    notes:
-      write_limited: 'only where explicitly allowed by write_permissions explained below'
+  allowed_operations_notes:
+    generate_assets: components, adapters, orchestration modules, evals, docs
+    write_limited: only where explicitly allowed by guardrails.write_permissions
 
   forbidden_operations:
     - modify_security_settings
-    - modify_ci_config # except where explicitly allowed
+    - modify_ci_config
     - delete_files
     - modify_license
     - publish_packages
     - create_or_modify_sensitive_secrets
-    - uncontrolled_file_generation # all new files must map to a blueprint, adapter, eval, or orchestration pipeline spec
+    - uncontrolled_file_generation
+  forbidden_operations_notes:
+    modify_ci_config: except where explicitly allowed
+    uncontrolled_file_generation: all new files must map to a blueprint, adapter, eval, or orchestration spec
 
   roles:
     orchestrator:
@@ -31,7 +32,7 @@ agents:
       scope: plan_only
       allowed_actions:
         - decompose_request
-        - select_pipelines # selects orchestration flows
+        - select_orchestration_flows
         - coordinate_evals
         - request_human_approval
     worker:
@@ -45,43 +46,39 @@ agents:
         - require_revision
 
 guardrails:
-  # Ensures all generated code conforms to the Prism architecture
   architectural_rules:
     - adapters_must_depend_only_on_third_party_sdks
-    - pipelines_must_use_blueprints
+    - orchestration_must_use_blueprints
     - ui_generation_must_use_ui_core_primitives
-    - no_cross_package_imports_outside_public_contracts # legacy rule id; enforces cross-domain public-contract boundaries
+    - no_cross_domain_imports_outside_public_contracts
     - new_features_require_blueprint_extension
 
-  # Ensures deterministic, testable outputs
   generation_requirements:
-    - deterministic_output: true
-    - requires_contract_alignment: true
-    - requires_test_coverage: true
-    - requires_eval_coverage: conditional # Required for new pipelines, adapters, or blueprint extensions
+    deterministic_output: true
+    requires_contract_alignment: true
+    requires_test_coverage: true
+    requires_eval_coverage: conditional
+  generation_requirements_notes:
+    requires_eval_coverage: required for new orchestration modules, adapters, or blueprint extensions
 
-
-  # Ensures safe code boundaries
   write_permissions:
-    blueprints: 'allowed_with_contract_alignment'
-    adapters: 'allowed_with_provider_spec'
-    pipelines: 'allowed_with_validation' # legacy key; maps to /domains/orchestration
-    evals: 'allowed'
-    ui-core: 'allowed_for_primitives_only'
-    storefront: 'allowed_for_widgets_only'
-    shared: 'read_only'
-    infra: 'read_only'
-    root: 'read_only'
+    blueprints: allowed_with_contract_alignment
+    adapters: allowed_with_provider_spec
+    orchestration: allowed_with_validation
+    evals: allowed
+    ui-core: allowed_for_primitives_only
+    storefront: allowed_for_widgets_only
+    shared: read_only
+    infra: read_only
+    root: read_only
 
-  # File structure constraints enforced by CI + agent runtime
   file_structure:
     enforce_blueprint_contracts: true
     enforce_adapter_normalization: true
-    enforce_pipeline_stability: true
+    enforce_orchestration_stability: true
     enforce_primitives_in_ui_core: true
     enforce_no_runtime_logic_in_blueprints: true
 
-  # Required checks before writing code
   pre_write_checks:
     - validate_path_against_blueprint
     - check_for_existing_contract
@@ -89,7 +86,6 @@ guardrails:
     - ensure_dependencies_whitelisted
     - run_static_analysis
 
-  # Required checks after generating code
   post_write_checks:
     - run_lint
     - run_typecheck
@@ -102,26 +98,25 @@ guardrails:
 
 contracts:
   semantics:
-    - 'All agent decisions must trace back to blueprints or specs.'
-    - 'All generated code must be reversible, diffable, and minimal.'
-    - 'No hidden or emergent behavior is permitted.'
-    - 'Orchestrators must follow /AGENTS/ORCHESTRATOR.md. Planning is governed.'
-    - 'Evals and validators are binding enforcement signals. Agents may not override them.'
+    - All agent decisions must trace back to blueprints or specs.
+    - All generated code must be reversible, diffable, and minimal.
+    - No hidden or emergent behavior is permitted.
+    - Orchestrators must follow /AGENTS/ORCHESTRATOR.md. Planning is governed.
+    - Evals and validators are binding enforcement signals. Agents may not override them.
 
   stability:
     versioning:
-      blueprint_contracts: 'strict'
-      adapters: 'semi_strict'
-      pipelines: 'strict'
-      evals: 'flexible'
-      ui_core: 'strict_for_primitives'
+      blueprint_contracts: strict
+      adapters: semi_strict
+      orchestration: strict
+      evals: flexible
+      ui_core: strict_for_primitives
 
 metadata:
   owner: tonym
   created: 2025-11-25
   updated: auto
-  description: |
+  description: >
     Global guardrail configuration for all AI agents operating within the Prism
     repository. CI enforces every rule defined here. This is the canonical
     behavioral contract between automated agents and the Prism codebase.
-

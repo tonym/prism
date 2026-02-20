@@ -23,13 +23,13 @@ Defines contracts, schemas, UI structures, agent action contracts, and pipeline 
 Contains *all external service integration logic* (LLMs, APIs, SDKs, databases).
 No other domain may directly depend on external vendors.
 
-### **Pipelines (execution & sequencing)**
+### **Orchestration (execution & sequencing)**
 `domains/orchestration/`
-Implements validated workflows and ordered execution flows that consume adapters and blueprints.
+Implements validated orchestration flows and ordered execution pipeline modules that consume adapters and blueprints.
 
 ### **Evals (quality & benchmarking)**
 `domains/evals/`
-Implements tests, scoring harnesses, regression checks, and evaluation pipelines.
+Implements tests, scoring harnesses, regression checks, and evaluation suites for orchestration modules and other domains.
 
 ### **Shared Utilities**
 `domains/shared/`
@@ -52,10 +52,11 @@ The following protocol files define the rules for each domain:
 - `/AGENTS/ADAPTERS.md` — How to generate or modify adapter integrations.
 - `/AGENTS/BLUEPRINTS.md` — Structure and rules for blueprint creation & updates.
 - `/AGENTS/EVALS.md` — How to create eval harnesses, tests, and scoring logic.
-- `/AGENTS/ORCHESTRATION.md` — How to build pipeline modules aligned with blueprints.
+- `/AGENTS/ORCHESTRATION.md` — How to build orchestration pipeline modules aligned with blueprints.
 - `/AGENTS/STOREFRONT.md` — Rules for Storefront contributions.
 - `/AGENTS/UI_CORE.md` — How agents should construct or modify UI primitives.
 - `/AGENTS/META.yml` — Global metadata, versions, and protocol alignment info.
+- `/AGENTS/PROTOCOL_MANIFEST.yml` — Machine-readable protocol precedence, read order, and canonical terminology map.
 - `/AGENTS/ORCHESTRATOR.md` — Planning, control, escalation, and eval coordination rules for orchestrating agents.
 
 
@@ -91,7 +92,7 @@ import { something } from '../../../shared/utils';
 ```
 
 **Enforcement**
-- Applies to all domains (UI, Angular, adapters, pipelines, evals, etc).
+- Applies to all domains (UI, Angular, adapters, orchestration, evals, etc).
 - Agents must refuse or fail output that violates import boundaries.
 - Relative imports *within* the same workspace module are allowed and expected.
 
@@ -102,7 +103,7 @@ Following this rule guarantees:
 - clean dependency graphs across the system
   
 3. **Blueprint-First Development**
-   All pipelines, adapters, and UI structures must map cleanly onto a blueprint contract.
+   All orchestration pipeline modules, adapters, and UI structures must map cleanly onto a blueprint contract.
    If no blueprint exists, propose one before implementing logic.
 
 4. **Minimal, Localized Diffs**
@@ -125,7 +126,7 @@ Following this rule guarantees:
 All generated or modified code **must include complete, deterministic test coverage**.
 
 **Requirements (applies to every domain):**
-- Every new component, utility, adapter, pipeline, or blueprint MUST include a corresponding test file as a sibling to the tested file in the same folder.
+- Every new component, utility, adapter, orchestration module, or blueprint MUST include a corresponding test file as a sibling to the tested file in the same folder.
 - Tests MUST use exactly one `expect()` per `it()` — including table-driven tests, which MUST have at most one `expect()` per test case.
 - Table-driven tests are allowed and encouraged for inputs with clear permutations.
 - All tests MUST pass before an agent considers a task complete.
@@ -169,7 +170,7 @@ When generating or modifying files, agents MUST follow these patterns:
 ### Adapters
 `domains/adapters/src/<vendor>/<feature>.adapter.ts`
 
-### Pipelines
+### Orchestration
 `domains/orchestration/src/<domain>/<name>.pipeline.ts`
 
 ### Evals

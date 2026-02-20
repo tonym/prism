@@ -3,7 +3,7 @@
 This document defines how agents must create, maintain, and execute evaluation frameworks ("evals") inside the Prism ecosystem.  
 Evals are the quality and regression backbone for Prism’s hub-and-spoke architecture.
 
-Evals ensure that pipelines, adapters, blueprints, UI Core primitives, and Storefront behavior remain **deterministic, consistent, and aligned with the AGENTS specifications**.
+Evals ensure that orchestration modules, adapters, blueprints, UI Core primitives, and Storefront behavior remain **deterministic, consistent, and aligned with the AGENTS specifications**.
 
 ---
 
@@ -12,7 +12,7 @@ Evals ensure that pipelines, adapters, blueprints, UI Core primitives, and Store
 Evals provide:
 
 - Automated regression checks for all agent-generated code  
-- Deterministic validation of pipelines, adapters, UI Core, and Storefront  
+- Deterministic validation of orchestration modules, adapters, UI Core, and Storefront  
 - Scoring and comparison over time (baseline vs. proposed changes)  
 - Guardrails preventing accidental architectural violations  
 - Safety checks for orchestrated agents  
@@ -64,11 +64,11 @@ Evals define **whether a plan, change, or output is acceptable**, not whether it
 
 Evals may include:
 
-- Test harnesses for deterministic pipeline outputs  
+- Test harnesses for deterministic orchestration outputs  
 - Schema compliance checks against blueprints  
 - Adapter behavior normalization tests  
 - UI Core primitive stability checks  
-- Storefront flow tests using mocked pipelines  
+- Storefront flow tests using mocked orchestration modules  
 - Scoring logic (pass/fail or graded)  
 - Fixture data representing known-good scenarios  
 - Regression snapshots where appropriate  
@@ -102,7 +102,7 @@ domains/evals/src/storefront/**
 Evals may depend on:
 
 - Blueprints  
-- Pipelines (mocked adapters only)  
+- Orchestration modules (mocked adapters only)  
 - UI Core primitives  
 - Storefront components (with mocks)  
 - Shared utilities  
@@ -137,7 +137,7 @@ Scoring must be:
 
 Examples:
 
-- “Does the pipeline produce the expected blueprint shape?”  
+- “Does the orchestration flow produce the expected blueprint shape?”  
 - “Does the adapter normalize vendor responses correctly?”  
 - “Does the UI Core primitive output the same DOM tree?”  
 
@@ -224,7 +224,7 @@ Storefront evals MUST test:
 
 - Page-level routing  
 - Loading, empty, and error state behavior  
-- Pipeline integration (mocked)  
+- Orchestration integration (mocked)  
 - State transitions (signals)  
 - DOM behavior for primary flows  
 
