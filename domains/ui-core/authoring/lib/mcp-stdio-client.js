@@ -9,8 +9,29 @@ function safeJsonParse(value) {
 }
 
 function buildMcpMessage(payload) {
-  const body = JSON.stringify(payload);
-  return `Content-Length: ${Buffer.byteLength(body, 'utf8')}\r\n\r\n${body}`;
+  return `${JSON.stringify(payload)}\n`;
+}
+
+export function parseNextMcpFrame(buffer) {
+  const newlineIndex = buffer.indexOf(0x0a);
+
+  if (newlineIndex < 0) {
+    return null;
+  }
+
+  let lineBuffer = buffer.subarray(0, newlineIndex);
+
+  if (lineBuffer.length > 0 && lineBuffer[lineBuffer.length - 1] === 0x0d) {
+    lineBuffer = lineBuffer.subarray(0, lineBuffer.length - 1);
+  }
+
+  const line = lineBuffer.toString('utf8').trim();
+  const message = line.length === 0 ? null : safeJsonParse(line);
+
+  return {
+    message,
+    remaining: buffer.subarray(newlineIndex + 1)
+  };
 }
 
 function parseTextContent(result) {
@@ -38,13 +59,13 @@ export class StdioMcpClient {
   constructor(config) {
     this.config = config;
     this.process = null;
-    this.buffer = '';
+    this.buffer = Buffer.alloc(0);
     this.nextId = 1;
     this.pending = new Map();
     this.stderrTail = [];
   }
 
-  async start() {
+  async start(initializeTimeoutMs = 120_000) {
     if (this.process) {
       return;
     }
@@ -57,9 +78,9 @@ export class StdioMcpClient {
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
-    this.process.stdout.setEncoding('utf8');
     this.process.stdout.on('data', (chunk) => {
-      this.buffer += chunk;
+      const chunkBuffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, 'utf8');
+      this.buffer = this.buffer.length === 0 ? chunkBuffer : Buffer.concat([this.buffer, chunkBuffer]);
       this.#drainBuffer();
     });
 
@@ -96,6 +117,17 @@ export class StdioMcpClient {
       this.process = null;
     });
 
+    this.process.on('error', (error) => {
+      const reason = `Failed to start MCP process: ${error.message}`;
+
+      for (const pending of this.pending.values()) {
+        pending.reject(new Error(reason));
+      }
+
+      this.pending.clear();
+      this.process = null;
+    });
+
     const initializeResult = await this.request(
       'initialize',
       {
@@ -106,7 +138,7 @@ export class StdioMcpClient {
           version: '1.0.0'
         }
       },
-      120_000
+      initializeTimeoutMs
     );
 
     this.notify('notifications/initialized', {});
@@ -148,7 +180,12 @@ export class StdioMcpClient {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error(`MCP request timed out after ${timeoutMs}ms: ${method}`));
+        const stderrSummary =
+          this.stderrTail.length > 0
+            ? ` Recent MCP stderr: ${this.stderrTail.slice(-8).join(' | ')}`
+            : '';
+
+        reject(new Error(`MCP request timed out after ${timeoutMs}ms: ${method}.${stderrSummary}`));
       }, timeoutMs);
 
       this.pending.set(id, {
@@ -179,7 +216,29 @@ export class StdioMcpClient {
     );
 
     if (response && typeof response === 'object' && response.isError) {
-      throw new Error(`MCP tool \"${name}\" returned an error result.`);
+      let detail = '';
+
+      try {
+        const parsedError = parseTextContent(response);
+
+        if (parsedError && typeof parsedError === 'object') {
+          if (typeof parsedError.error === 'string') {
+            detail = parsedError.error;
+          } else if (typeof parsedError.message === 'string') {
+            detail = parsedError.message;
+          } else {
+            detail = JSON.stringify(parsedError);
+          }
+        }
+      } catch {
+        // Fallback to the generic tool error when content parsing fails.
+      }
+
+      throw new Error(
+        detail.length > 0
+          ? `MCP tool \"${name}\" returned an error result: ${detail}`
+          : `MCP tool \"${name}\" returned an error result.`
+      );
     }
 
     return parseTextContent(response);
@@ -187,41 +246,17 @@ export class StdioMcpClient {
 
   #drainBuffer() {
     while (true) {
-      const headerBoundary = this.buffer.indexOf('\r\n\r\n');
+      const parsedFrame = parseNextMcpFrame(this.buffer);
 
-      if (headerBoundary < 0) {
+      if (!parsedFrame) {
         return;
       }
 
-      const header = this.buffer.slice(0, headerBoundary);
-      const contentLengthMatch = header.match(/content-length:\s*(\d+)/i);
+      this.buffer = parsedFrame.remaining;
 
-      if (!contentLengthMatch) {
-        this.buffer = this.buffer.slice(headerBoundary + 4);
-        continue;
-      }
+      const message = parsedFrame.message;
 
-      const contentLengthRaw = contentLengthMatch[1];
-
-      if (!contentLengthRaw) {
-        this.buffer = this.buffer.slice(headerBoundary + 4);
-        continue;
-      }
-
-      const contentLength = Number.parseInt(contentLengthRaw, 10);
-      const bodyStart = headerBoundary + 4;
-      const bodyEnd = bodyStart + contentLength;
-
-      if (this.buffer.length < bodyEnd) {
-        return;
-      }
-
-      const body = this.buffer.slice(bodyStart, bodyEnd);
-      this.buffer = this.buffer.slice(bodyEnd);
-
-      const message = safeJsonParse(body);
-
-      if (!message || typeof message !== 'object' || message.id === undefined) {
+      if (!message || typeof message !== 'object' || !Object.prototype.hasOwnProperty.call(message, 'id')) {
         continue;
       }
 

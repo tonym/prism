@@ -154,9 +154,9 @@ No authoring modules are exported from `src/index.ts`.
 
 ### Prerequisites
 
-- A configured Codex MCP server entry for `figma_console` in `~/.codex/config.toml`
-- Access to the target Figma file through that MCP server
+- A Figma access token available as `FIGMA_ACCESS_TOKEN` (recommended in `.env`)
 - Figma variable collection name exactly: `Prism UI Core Tokens`
+- Optional: a configured Codex MCP server entry for `figma_console` when using `--transport mcp`
 
 ### Commands
 
@@ -164,9 +164,13 @@ Run from repo root:
 
 ```bash
 pnpm --filter @prism/ui-core figma:extract -- --file-url "https://www.figma.com/design/<fileKey>/<name>"
+# optional MCP mode:
+pnpm --filter @prism/ui-core figma:extract -- --transport mcp --file-url "https://www.figma.com/design/<fileKey>/<name>"
 pnpm --filter @prism/ui-core figma:map:suggest
 pnpm --filter @prism/ui-core figma:map:check
 ```
+
+`figma:extract` defaults to `--transport rest` and loads `./.env` automatically.
 
 `figma:map:suggest` behavior:
 

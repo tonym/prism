@@ -91,7 +91,7 @@ function getCollectionsFromPayload(payload) {
   const root = isPlainObject(payload.data) ? payload.data : payload;
 
   if (!isPlainObject(root)) {
-    throw new Error('FCMCP figma_get_variables response must be a JSON object.');
+    throw new Error('Figma variables response must be a JSON object.');
   }
 
   if (Array.isArray(root.collections)) {
@@ -102,7 +102,14 @@ function getCollectionsFromPayload(payload) {
     return root.variableCollections;
   }
 
-  throw new Error('FCMCP figma_get_variables response does not include collections in full format.');
+  if (isPlainObject(root.variableCollections)) {
+    return Object.entries(root.variableCollections).map(([id, collection]) => ({
+      id,
+      ...(isPlainObject(collection) ? collection : {})
+    }));
+  }
+
+  throw new Error('Figma variables response does not include collections in full format.');
 }
 
 function getVariablesForCollection(rootPayload, rawCollection) {
@@ -113,6 +120,15 @@ function getVariablesForCollection(rootPayload, rawCollection) {
   const root = isPlainObject(rootPayload.data) ? rootPayload.data : rootPayload;
 
   if (!isPlainObject(root) || !Array.isArray(root.variables)) {
+    if (isPlainObject(root) && isPlainObject(root.variables)) {
+      const mapEntries = Object.entries(root.variables).map(([id, variable]) => ({
+        id,
+        ...(isPlainObject(variable) ? variable : {})
+      }));
+      const collectionId = String(rawCollection.id ?? '');
+      return mapEntries.filter((variable) => String(variable.variableCollectionId ?? '') === collectionId);
+    }
+
     return [];
   }
 
@@ -159,13 +175,27 @@ export function normalizeFigmaVariablesPayload(payload) {
 
 export function buildNormalizedSnapshot(payload, options = {}) {
   const normalized = normalizeFigmaVariablesPayload(payload);
+  const transport = typeof options.transport === 'string' ? options.transport : 'mcp';
+
+  const serverName =
+    typeof options.serverName === 'string' && options.serverName.length > 0
+      ? options.serverName
+      : transport === 'rest'
+        ? 'figma_rest'
+        : 'figma_console';
+  const toolName =
+    typeof options.toolName === 'string' && options.toolName.length > 0
+      ? options.toolName
+      : transport === 'rest'
+        ? 'files.variables.local'
+        : 'figma_get_variables';
 
   const baseSnapshot = {
     schemaVersion: SNAPSHOT_SCHEMA_VERSION,
     source: {
-      transport: 'mcp',
-      serverName: options.serverName ?? 'figma_console',
-      toolName: 'figma_get_variables',
+      transport,
+      serverName,
+      toolName,
       collectionName: COLLECTION_NAME
     },
     collection: normalized.collection

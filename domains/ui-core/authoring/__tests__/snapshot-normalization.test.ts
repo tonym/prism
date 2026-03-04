@@ -116,4 +116,58 @@ describe('buildNormalizedSnapshot', () => {
 
     expect(serialized.includes('timestamp')).toBe(false);
   });
+
+  it('normalizes REST payload maps into stable snapshot data', () => {
+    const payload = {
+      variableCollections: {
+        'collection-1': {
+          name: 'Prism UI Core Tokens',
+          defaultModeId: 'mode-a',
+          modes: [{ id: 'mode-a', name: 'Mode 1' }]
+        }
+      },
+      variables: {
+        'var-1': {
+          name: 'prism-color-primary',
+          resolvedType: 'COLOR',
+          variableCollectionId: 'collection-1',
+          valuesByMode: {
+            'mode-a': '#0057D9'
+          }
+        }
+      }
+    };
+
+    const snapshot = buildNormalizedSnapshot(payload, { transport: 'rest' });
+
+    expect(snapshot).toEqual({
+      schemaVersion: 1,
+      source: {
+        transport: 'rest',
+        serverName: 'figma_rest',
+        toolName: 'files.variables.local',
+        collectionName: 'Prism UI Core Tokens'
+      },
+      collection: {
+        id: 'collection-1',
+        name: 'Prism UI Core Tokens',
+        defaultModeId: 'mode-a',
+        modes: [{ id: 'mode-a', name: 'Mode 1' }],
+        variables: [
+          {
+            id: 'var-1',
+            name: 'prism-color-primary',
+            resolvedType: 'COLOR',
+            description: null,
+            hiddenFromPublishing: false,
+            scopes: [],
+            valuesByMode: {
+              'mode-a': '#0057D9'
+            }
+          }
+        ]
+      },
+      contentHash: snapshot.contentHash
+    });
+  });
 });
