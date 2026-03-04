@@ -141,3 +141,10 @@ vite.config.ts.timestamp-*
 # Prism domain temp build outputs
 domains/ui-core/.tmp-*/
 domains/ui-core/storybook-static/
+
+# Codex local artifacts
+.codex/artifacts/
+
+# Figma snapshot artifacts: keep latest canonical snapshot, ignore timestamped history
+domains/ui-core/authoring/snapshots/figma/*.json
+!domains/ui-core/authoring/snapshots/figma/latest.json
