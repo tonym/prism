@@ -65,6 +65,23 @@ export function normalizeSnapshot(snapshot) {
 }
 
 export async function readSnapshotFile(snapshotPath) {
-  const parsed = await readJson(snapshotPath);
-  return normalizeSnapshot(parsed);
+  try {
+    const parsed = await readJson(snapshotPath);
+    return normalizeSnapshot(parsed);
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ENOENT'
+    ) {
+      throw new Error(
+        `Snapshot file not found: ${snapshotPath}. Run ` +
+          `"pnpm --filter @prism/ui-core figma:extract -- --file-url <figma-url>" ` +
+          'or pass --snapshot <path>.'
+      );
+    }
+
+    throw error;
+  }
 }
