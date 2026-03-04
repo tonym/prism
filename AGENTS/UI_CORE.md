@@ -1,127 +1,121 @@
 # UI Core Protocol
 
-This document defines how agents must interact with **Prism’s UI Core** layer — the system of low-level UI primitives, tokens, and rendering utilities shared across the entire Prism ecosystem.
+This document defines how agents must interact with Prism's UI Core domain at `domains/ui-core/`.
+UI Core is the deterministic primitive layer for Prism: theme tokens, component blueprints, generated Web Component artifacts, and distribution surfaces for downstream consumers.
 
-UI Core is *not* a product UI and is *not* a framework. It is a stable primitive layer designed so that humans and agents can build consistent, deterministic UI from shared contracts.
+UI Core is not an app surface and must not take dependencies on Storefront or orchestration code.
 
 ---
 
-## 🎯 Purpose of UI Core
+## Purpose of UI Core
 
 UI Core provides:
 
-- **Design tokens** (spacing, color, typography, motion)
-- **Primitive components** (`Button`, `Panel`, `Text`, `Card`, `Tabs`, etc.)
-- **Interaction utilities** (focus traps, keyboard helpers, semantics)
-- **Blueprint → UI mappers** supporting agent‑generated UI
-- **Rendering adapters** shared with Storefront
+- Theme token and layer contracts (`prism-tokens`, theme types, `mergeTheme`, CSS variable resolution)
+- Blueprint contracts for supported component primitives (`button`, `icon-button`, `typography`, `surface`)
+- Deterministic generation of `prism-*` Web Component artifacts from blueprints
+- Artifact/status reporting used to verify distribution completeness
+- MCP distribution tools that serve ui-core artifacts (components, theme, fonts, blueprints)
+- Local Storybook workbench for maintainers to inspect generated artifacts
 
-Agents must treat UI Core as the *canonical source of truth* for all UI primitives.
-
----
-
-## 🧭 What Agents Can Modify
-
-Agents **may**:
-
-- Add new primitives that follow established patterns
-- Update design tokens when explicitly requested
-- Extend interactions in a backward‑compatible manner
-- Add documentation and examples
-- Contribute blueprint-aligned UI renderers
-
-Agents **must not**:
-
-- Introduce framework-specific components (React, Vue, Angular)
-- Add styling logic directly to primitives (use tokens)
-- Break deterministic behavior or introduce side-effects
-- Add runtime dependencies without approval
+Agents must treat blueprints plus deterministic generation as the canonical source of UI component truth.
 
 ---
 
-## 📐 Required Architectural Boundaries
+## Allowed and Disallowed Changes
 
-1. **UI Core never depends on Storefront.**
-   Storefront may depend on UI Core, but not the other way around.
+Agents may:
 
-2. **Primitives must remain headless-first.**
-   Styling is optional and must be expressed only through tokens.
+- Update or extend blueprint contracts and template generation logic
+- Update theme/token structures when explicitly requested and contract-aligned
+- Modify MCP/status tooling that exposes ui-core artifacts
+- Improve docs and examples that describe current ui-core behavior
+- Add or update deterministic tests in existing test locations
 
-3. **Blueprint alignment is mandatory.**
-   New UI primitives must correspond to valid blueprint shapes.
+Agents must not:
 
-4. **Deterministic rendering.**
-   Every component must behave identically regardless of platform.
-
----
-
-## 🛠️ Code Generation Rules for Agents
-
-When generating or editing UI Core source files:
-
-- All component code resides in
-  `domains/ui-core/src/**`
-- Style tokens live in
-  `domains/ui-core/src/tokens/**`
-- Behavioral utilities live in
-  `domains/ui-core/src/utils/**`
-- Blueprint mappers belong in
-  `domains/ui-core/src/blueprint/**`
-
-Agents must check for existing patterns before creating new files.
-If no pattern exists, propose one and wait for human approval.
+- Add UI Core dependencies on Storefront, orchestration, adapters, or other non-public cross-domain internals
+- Hand-edit generated artifacts in `src/generated/**` as a source-of-truth change
+- Introduce nondeterministic behavior in generation, hashing, serialization, or artifact responses
+- Introduce framework-bound APIs that break the package's framework-agnostic Web Component contract
+- Add runtime dependencies without explicit approval
 
 ---
 
-## 🧪 Testing Requirements
+## Required Architectural Boundaries
 
-All changes must include:
+1. Blueprint-first:
+   Component shape and behavior contracts are defined in `src/blueprint/**` and generation consumes those contracts.
 
-- Unit tests for behavior
-- Snapshot tests for deterministic output
-- Token‑driven style checks
-- Validation against existing blueprint contracts
+2. Deterministic generation:
+   Generator output must be stable for identical blueprint and token input.
 
-Tests live at:
-`domains/ui-core/src/**/__tests__/**`
+3. Distribution integrity:
+   MCP and status modules expose facts about package artifacts and versions; they must remain structured and deterministic.
 
----
-
-## 📄 Documentation Requirements
-
-Every contributed primitive must include:
-
-- A README with usage examples
-- A blueprint mapping example (if applicable)
-- An explanation of supported props
-- Notes on accessibility expectations
-
-All docs live in the same folder as the component.
+4. Domain isolation:
+   UI Core may be consumed by other domains, but UI Core does not import from product/application domains.
 
 ---
 
-## 🧩 Interaction With Other Domains
+## Canonical UI Core Paths
 
-- **Blueprints:** define the allowed shapes agents use to construct UI.
-- **Storefront:** consumes UI Core to render actual product surfaces.
-- **Pipelines/Agents:** may output UI blueprints, which map into UI Core.
+- Public exports: `domains/ui-core/src/index.ts`
+- Blueprint contracts: `domains/ui-core/src/blueprint/**`
+- Generator logic: `domains/ui-core/src/generator/**`
+- Theme and merge logic: `domains/ui-core/src/theme/**`
+- CSS variable resolution: `domains/ui-core/src/css/**`
+- Determinism utilities: `domains/ui-core/src/determinism/**`
+- Status reporting: `domains/ui-core/src/status/**`
+- MCP server/tools: `domains/ui-core/src/mcp/**`
+- Generated artifacts: `domains/ui-core/src/generated/**`
+- Storybook stories/workbench: `domains/ui-core/src/stories/**`
 
-UI Core is *never* allowed to depend on these domains.
-
----
-
-## ✔️ Agent Behavior Summary
-
-Agents working on UI Core must:
-
-1. Preserve architectural boundaries
-2. Maintain blueprint alignment
-3. Keep primitives deterministic
-4. Use tokens for all styling
-5. Provide tests and documentation
-6. Avoid adding dependencies
-7. Prefer minimal diffs
+Agents should follow existing placement patterns and keep diffs minimal.
 
 ---
 
-By following this protocol, agents ensure that Prism’s UI Core grows in a consistent, safe, and predictable way that supports both human and agent‑generated interfaces.
+## Testing Rules (UI Core Specific)
+
+Follow global testing policy in `AGENTS/ROOT.md` and `AGENTS/META.yml`.
+For ui-core changes, this means:
+
+- Add deterministic unit tests for modified behavior
+- Cover happy paths, error paths, guard clauses, and edge cases
+- Do not introduce snapshot tests
+- Keep tests hermetic (no external services, no nondeterministic timers)
+
+Current ui-core tests are colocated under module-level `__tests__` folders within `domains/ui-core/src/**`.
+
+---
+
+## Documentation Expectations
+
+When behavior changes, update relevant ui-core documentation (for example `domains/ui-core/README.md`) so it remains consistent with:
+
+- Public exports and package surfaces
+- Blueprint and generation flow
+- MCP distribution contract
+- Consumer customization model (CSS variable overrides)
+
+---
+
+## Cross-Domain Interaction
+
+- Blueprints domain defines architectural contracts that ui-core must honor.
+- Storefront and other consumers consume ui-core outputs; ui-core does not depend on them.
+- UI-producing pipelines should target blueprint-compatible primitives rather than bypassing ui-core contracts.
+
+---
+
+## Agent Summary
+
+Agents working in UI Core must:
+
+1. Keep blueprint and generator behavior aligned
+2. Preserve deterministic output and status signals
+3. Maintain domain isolation and import boundaries
+4. Avoid editing generated artifacts as hand-authored source
+5. Add meaningful tests without snapshot usage
+6. Update docs when public behavior changes
+7. Prefer minimal, contract-aligned diffs
