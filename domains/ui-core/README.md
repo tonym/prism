@@ -144,6 +144,74 @@ The generated page includes:
 
 This demonstrates customization is performed in consumer CSS, not by server-side theme merging.
 
+## Figma Authoring Alignment (Maintainer)
+
+Figma is the internal authoring substrate for UI Core token review.
+Published contract truth remains UI Core blueprints and token exports in this repository.
+
+This workflow is implemented under `domains/ui-core/authoring/**` and is intentionally non-public.
+No authoring modules are exported from `src/index.ts`.
+
+### Prerequisites
+
+- A configured Codex MCP server entry for `figma_console` in `~/.codex/config.toml`
+- Access to the target Figma file through that MCP server
+- Figma variable collection name exactly: `Prism UI Core Tokens`
+
+### Commands
+
+Run from repo root:
+
+```bash
+pnpm --filter @prism/ui-core figma:extract -- --file-url "https://www.figma.com/design/<fileKey>/<name>"
+pnpm --filter @prism/ui-core figma:map:suggest
+pnpm --filter @prism/ui-core figma:map:check
+```
+
+`figma:map:suggest` behavior:
+
+- read-only by default (does not modify mapping file)
+- write mappings only when `--write` is provided
+- mapping writes only apply high-confidence, single-candidate suggestions
+
+### Artifacts
+
+- Snapshots:
+  - `domains/ui-core/authoring/snapshots/figma/<snapshotId>.json`
+  - `domains/ui-core/authoring/snapshots/figma/latest.json`
+- Mapping:
+  - `domains/ui-core/authoring/mappings/figma-token-map.json`
+- Reports:
+  - `domains/ui-core/authoring/reports/figma-map-check-*.json`
+  - `domains/ui-core/authoring/reports/latest.json`
+
+Snapshot IDs use `YYYYMMDDTHHmmssZ-<hash8>` and include a deterministic content hash.
+Normalized snapshots are stable-ordered and omit volatile runtime metadata.
+
+### Mapping and Checks
+
+- Canonical mapping target keys are dot-path repo token keys inferred from `src/prism-tokens.ts` exports.
+- Figma variable names are interpreted from the `prism-` prefix plus hyphen hierarchy.
+- `figma:map:check` is warn-only for:
+  - unmapped Figma variables
+  - unmapped repo token keys
+- `figma:map:check` fails (non-zero) for structural issues:
+  - invalid mapping JSON shape
+  - invalid repo token key references in mapping entries
+
+### Boundary Rule
+
+The authoring layer must not be imported by core runtime surfaces:
+
+- `src/generator/**`
+- `src/determinism/**`
+- `src/status/**`
+- `src/mcp/**`
+- `src/theme/**`
+- `src/css/**`
+
+This is enforced by `pnpm --filter @prism/ui-core check:authoring:boundaries` and is included in `lint` and `test`.
+
 ## Concrete Template Override Example
 
 This example shows a minimal custom `button-brand` template kind that extends the existing button template with a branded border and shadow.
