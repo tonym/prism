@@ -1,0 +1,4 @@
+interface:
+  display_name: "Figma extract"
+  short_description: "Extract Figma variables via MCP and write deterministic snapshots"
+  default_prompt: "Use $figma-extract to fetch variables from Figma Console MCP, normalize deterministically, and write snapshot JSON files using optional repo config."
