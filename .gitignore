@@ -148,3 +148,6 @@ domains/ui-core/storybook-static/
 # Figma snapshot artifacts: keep latest canonical snapshot, ignore timestamped history
 domains/ui-core/authoring/snapshots/figma/*.json
 !domains/ui-core/authoring/snapshots/figma/latest.json
+
+# Figma alignment reports (generated artifacts)
+domains/ui-core/authoring/reports/
